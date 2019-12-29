@@ -1,8 +1,16 @@
 <config>
    <agents>
       <agent>
-         <path>/home/kathi/Documents/strategygameprogramming/lib/agents/alphabetaagent-1.0-SNAPSHOT.jar</path>
+         <path>lib/agents/alphabetaagent-1.0-SNAPSHOT.jar</path>
          <classname>at.pwd.alphabetaagent.MancalaAlphaBetaAgent</classname>
+      </agent>
+      <agent>
+         <path>lib/agents/mctsagent-1.0-SNAPSHOT.jar</path>
+         <classname>at.pwd.mctsagent.MancalaMCTSAgent</classname>
+      </agent>
+      <agent>
+         <path>lib/agents/randomagent-1.0-SNAPSHOT.jar</path>
+         <classname>at.pwd.randomagent.MancalaRandomAgent</classname>
       </agent>
    </agents>
    <computation-time>10</computation-time>
