@@ -1,0 +1,11 @@
+<config>
+   <agents>
+      <agent>
+         <path>/home/kathi/Documents/strategygameprogramming/lib/agents/alphabetaagent-1.0-SNAPSHOT.jar</path>
+         <classname>at.pwd.alphabetaagent.MancalaAlphaBetaAgent</classname>
+      </agent>
+   </agents>
+   <computation-time>10</computation-time>
+   <stones-per-slot>6</stones-per-slot>
+   <slots-per-player>6</slots-per-player>
+</config>
