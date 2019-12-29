@@ -13,7 +13,7 @@
          <classname>at.pwd.randomagent.MancalaRandomAgent</classname>
       </agent>
    </agents>
-   <computation-time>10</computation-time>
+   <computation-time>1</computation-time>
    <stones-per-slot>6</stones-per-slot>
    <slots-per-player>6</slots-per-player>
 </config>
