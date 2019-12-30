@@ -1,4 +1,4 @@
-package at.pwd.agent;
+package at.pwd.agent.lowerBound;
 
 
 import at.pwd.boardgame.game.base.WinState;
@@ -14,12 +14,10 @@ import java.util.Random;
 /**
  * Created by rfischer on 18/04/2017.
  */
-public class TestAgent implements MancalaAgent {
+public class MancalaMCTSAgent implements MancalaAgent {
     private Random r = new Random();
     private MancalaState originalState;
-    private static final double C = 1.0f / Math.sqrt(2.0f);
-
-    private int counter = 10;
+    private static final double C = 1.0f/Math.sqrt(2.0f);
 
     private class MCTSTree {
         private int visitCount;
@@ -31,23 +29,24 @@ public class TestAgent implements MancalaAgent {
         private List<MCTSTree> children;
         String action;
 
-        public MCTSTree(MancalaGame game) {
+        MCTSTree(MancalaGame game) {
             this.game = game;
             this.children = new ArrayList<>();
             this.winState = game.checkIfPlayerWins();
         }
 
-        public boolean isNonTerminal() {
+        boolean isNonTerminal() {
             return winState.getState() == WinState.States.NOBODY;
         }
 
-        public MCTSTree getBestNode() {
+        MCTSTree getBestNode() {
             MCTSTree best = null;
             double value = 0;
             for (MCTSTree m : children) {
-                double wC = (double) m.winCount;
-                double vC = (double) m.visitCount;
-                double currentValue = wC / vC + C * Math.sqrt(2 * Math.log(visitCount) / vC);
+                double wC = (double)m.winCount;
+                double vC = (double)m.visitCount;
+                double currentValue =  wC/vC + C*Math.sqrt(2*Math.log(visitCount) / vC);
+
 
                 if (best == null || currentValue > value) {
                     value = currentValue;
@@ -58,11 +57,11 @@ public class TestAgent implements MancalaAgent {
             return best;
         }
 
-        public boolean isFullyExpanded() {
+        boolean isFullyExpanded() {
             return children.size() == game.getSelectableSlots().size();
         }
 
-        public MCTSTree move(String action) {
+        MCTSTree move(String action) {
             MancalaGame newGame = new MancalaGame(this.game);
             if (!newGame.selectSlot(action)) {
                 newGame.nextPlayer();
@@ -78,8 +77,6 @@ public class TestAgent implements MancalaAgent {
         }
     }
 
-    private int i = 0;
-
     @Override
     public MancalaAgentAction doTurn(int computationTime, MancalaGame game) {
         long start = System.currentTimeMillis();
@@ -87,9 +84,7 @@ public class TestAgent implements MancalaAgent {
 
         MCTSTree root = new MCTSTree(game);
 
-        System.out.println("computation time " + computationTime);
-
-        while ((System.currentTimeMillis() - start) < (computationTime * 1000 - 100)) {
+        while ((System.currentTimeMillis() - start) < (computationTime*1000 - 100)) {
             MCTSTree best = treePolicy(root);
             WinState winning = defaultPolicy(best.game);
             backup(best, winning);
@@ -97,7 +92,6 @@ public class TestAgent implements MancalaAgent {
 
         MCTSTree selected = root.getBestNode();
         System.out.println("Selected action " + selected.winCount + " / " + selected.visitCount);
-        System.out.println("called doTurn " + ++i);
         return new MancalaAgentAction(selected.action);
     }
 
@@ -130,23 +124,22 @@ public class TestAgent implements MancalaAgent {
         List<String> legalMoves = best.game.getSelectableSlots();
 
         //remove already expanded moves
-        for (MCTSTree move : best.children) {
+        for(MCTSTree move : best.children)
             legalMoves.remove(move.action);
-        }
 
         return best.move(legalMoves.get(r.nextInt(legalMoves.size())));
-    }
+	}
 
     private WinState defaultPolicy(MancalaGame game) {
         game = new MancalaGame(game); // copy original game
         WinState state = game.checkIfPlayerWins();
 
-        while (state.getState() == WinState.States.NOBODY) {
+        while(state.getState() == WinState.States.NOBODY) {
             String play;
             do {
                 List<String> legalMoves = game.getSelectableSlots();
                 play = legalMoves.get(r.nextInt(legalMoves.size()));
-            } while (game.selectSlot(play));
+            } while(game.selectSlot(play));
             game.nextPlayer();
 
             state = game.checkIfPlayerWins();
@@ -157,6 +150,6 @@ public class TestAgent implements MancalaAgent {
 
     @Override
     public String toString() {
-        return "Deep Bean";
+        return "Monte Carlo Tree Search";
     }
 }
