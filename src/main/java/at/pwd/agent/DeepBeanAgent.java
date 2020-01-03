@@ -4,6 +4,8 @@ import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgent;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
 import at.pwd.mcst.MCT;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 
 public class DeepBeanAgent implements MancalaAgent {
     private MCT tree = new MCT();

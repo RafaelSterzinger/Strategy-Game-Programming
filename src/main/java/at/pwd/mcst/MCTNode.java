@@ -81,9 +81,7 @@ public class MCTNode {
         MCTNode node = new MCTNode(newState);
         node.action = action;
         node.parent = this;
-
         this.children.add(node);
-
         return node;
     }
 
