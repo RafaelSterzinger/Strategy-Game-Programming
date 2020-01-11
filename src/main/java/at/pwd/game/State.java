@@ -10,13 +10,16 @@ import java.util.List;
 
 public class State {
     private int[] board;
+
     private int playerTurn;
-    private boolean done;
-    private int winner = -1;
+    private int nextPlayerTurn;
+
+    private int winner = UNDEFINED_ID;
 
     public static final int UNDEFINED_ID = -1;
-    public static final int BLACK_ID = 0;
-    public static final int WHITE_ID = 1;
+    public static final int NOBODY_ID = 0;
+    public static final int BLACK_ID = 1;
+    public static final int WHITE_ID = 2;
 
     private static final int WHITE_KALAHA = 6;
     private static final int BLACK_KALAHA = 13;
@@ -31,7 +34,7 @@ public class State {
     public State(State state) {
         this.board = Arrays.copyOf(state.board, state.board.length);
         playerTurn = state.playerTurn;
-        done = state.done;
+        nextPlayerTurn = state.nextPlayerTurn;
         winner = state.winner;
     }
 
@@ -50,17 +53,24 @@ public class State {
         board[11] = 6;
         board[12] = 6;
         board[13] = 0;
-        done = false;
         if (randomStart) {
             playerTurn = Math.random() < 0.5 ? WHITE_ID : BLACK_ID;
         } else {
             playerTurn = State.WHITE_ID;
         }
+        nextPlayerTurn = playerTurn;
     }
 
     public State step(int action) {
+        State state = new State(this);
+        state.update(action);
+        return state;
+    }
+
+    public void update(int action) {
         assert playerTurn == BLACK_ID || playerTurn == WHITE_ID;
         assert getActionList().contains(action);
+        playerTurn = nextPlayerTurn;
 
         int ownKalaha;
         int oppKalaha;
@@ -71,21 +81,22 @@ public class State {
         if (playerTurn == State.WHITE_ID) {
             ownKalaha = WHITE_KALAHA;
             oppKalaha = BLACK_KALAHA;
-            mapOpposite = MAP_OPPOSITE_WHITE;
             opponentId = BLACK_ID;
+            mapOpposite = MAP_OPPOSITE_WHITE;
             start = 0;
             stop = oppKalaha;
         } else {
             ownKalaha = BLACK_KALAHA;
             oppKalaha = WHITE_KALAHA;
-            mapOpposite = MAP_OPPOSITE_BLACK;
             opponentId = WHITE_ID;
+            mapOpposite = MAP_OPPOSITE_BLACK;
             start = oppKalaha + 1;
             stop = ownKalaha;
         }
         int stonesInHand = board[action];
-        board[action] = 0;
         assert stonesInHand != 0;
+
+        board[action] = 0;
         int index = action;
         while (stonesInHand > 0) {
             index = (index + 1) % 14;
@@ -102,28 +113,40 @@ public class State {
                     board[ownKalaha] += oppositeValue + 1;
                     board[index] = 0;
                     board[oppositeIndex] = 0;
+                    int sum = 0;
+                    for (int i = start; i < stop; i++) {
+                        sum += board[mapOpposite[i]];
+                    }
+                    if (sum == 0) {
+                        determineWinner(oppKalaha);
+                    }
                 }
             }
-            playerTurn = opponentId;
+            nextPlayerTurn = opponentId;
         }
         int sum = 0;
         for (int i = start; i < stop; i++) {
             sum += board[i];
         }
         if (sum == 0) {
-            for (int i = 0; i < board[i]; i++) {
-                board[oppKalaha] += board[i];
-                board[i] = 0;
-            }
-            done = true;
-            if (board[WHITE_KALAHA] < board[BLACK_KALAHA]) {
-                winner = WHITE_ID;
-            } else if (board[WHITE_KALAHA] > board[BLACK_KALAHA]) {
-                winner = BLACK_ID;
-            }
+            determineWinner(oppKalaha);
         }
-        return this;
     }
+
+    private void determineWinner(int oppKalaha) {
+        for (int i = 0; i < board[i]; i++) {
+            board[oppKalaha] += board[i];
+            board[i] = 0;
+        }
+        if (board[WHITE_KALAHA] < board[BLACK_KALAHA]) {
+            winner = WHITE_ID;
+        } else if (board[WHITE_KALAHA] > board[BLACK_KALAHA]) {
+            winner = BLACK_ID;
+        } else {
+            winner = NOBODY_ID;
+        }
+    }
+
 
     public int getPlayerTurn() {
         return playerTurn;
@@ -156,10 +179,6 @@ public class State {
         return actionArray;
     }
 
-    public INDArray getMask() {
-        return Nd4j.create(getBooleanMask());
-    }
-
     private boolean[] getBooleanMask() {
         boolean[] mask = new boolean[6];
         int start = 0;
@@ -172,6 +191,10 @@ public class State {
             }
         }
         return mask;
+    }
+
+    public INDArray getMask() {
+        return Nd4j.create(getBooleanMask());
     }
 
     public INDArray getStateForModel() {
@@ -189,13 +212,18 @@ public class State {
         return Nd4j.createFromArray(array);
     }
 
-    public State newStep(int action) {
-        return new State(this).step(action);
+    public boolean isDone() {
+        return winner != -1;
     }
 
-    public boolean isDone() {
-        return done;
+    public boolean isNotDone() {
+        return winner == -1;
     }
+
+    public int getWinner() {
+        return winner;
+    }
+
 
     public String toString() {
         StringBuilder sb = new StringBuilder();

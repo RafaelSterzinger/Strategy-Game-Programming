@@ -3,6 +3,7 @@ package at.pwd.mcst;
 import at.pwd.boardgame.game.base.WinState;
 import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
+import at.pwd.game.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Random;
 public class MCTNode {
     private static final Random RANDOM = new Random();
 
-    private MancalaGame state;
+    private State state;
     private MCTNode parent;
     private String action;
 
@@ -21,34 +22,27 @@ public class MCTNode {
     private int winCount;
     private int visitCount;
 
-    private final boolean terminal;
-    private WinState result;
-
     private List<String> possibleActions;
 
     private double currentValue;
 
     private static final double C = 1.0 / Math.sqrt(2.0);
 
-    public MCTNode(MancalaGame state) {
+    public MCTNode(State state) {
         this.state = state;
         children = new ArrayList<>();
-        WinState result = state.checkIfPlayerWins();
-        this.terminal = result.getState() != WinState.States.NOBODY;
-        this.result = state.checkIfPlayerWins();
-        this.possibleActions = state.getSelectableSlots();
     }
 
-    public MancalaGame getState() {
+    public State getState() {
         return state;
     }
 
     public boolean isTerminal() {
-        return terminal;
+        return state.isDone();
     }
 
-    public WinState getResult() {
-        return result;
+    public int getResult() {
+        return state.getWinner();
     }
 
     public boolean isFullyExpanded() {
@@ -73,8 +67,8 @@ public class MCTNode {
     }
 
     public MCTNode randomMove() {
-        String action = possibleActions.remove(RANDOM.nextInt(possibleActions.size()));
-        MancalaGame newState = new MancalaGame(this.state);
+        List<Integer> moves = state.getActionList();
+        State
         if (!newState.selectSlot(action)) {
             newState.nextPlayer();
         }
