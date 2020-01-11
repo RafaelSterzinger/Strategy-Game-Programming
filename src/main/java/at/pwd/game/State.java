@@ -1,5 +1,6 @@
 package at.pwd.game;
 
+import at.pwd.boardgame.game.mancala.MancalaGame;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -12,7 +13,6 @@ public class State {
     private int[] board;
 
     private int playerTurn;
-    private int nextPlayerTurn;
 
     private int winner = UNDEFINED_ID;
 
@@ -34,7 +34,6 @@ public class State {
     public State(State state) {
         this.board = Arrays.copyOf(state.board, state.board.length);
         playerTurn = state.playerTurn;
-        nextPlayerTurn = state.nextPlayerTurn;
         winner = state.winner;
     }
 
@@ -58,7 +57,6 @@ public class State {
         } else {
             playerTurn = State.WHITE_ID;
         }
-        nextPlayerTurn = playerTurn;
     }
 
     public State step(int action) {
@@ -70,7 +68,6 @@ public class State {
     public void update(int action) {
         assert playerTurn == BLACK_ID || playerTurn == WHITE_ID;
         assert getActionList().contains(action);
-        playerTurn = nextPlayerTurn;
 
         int ownKalaha;
         int oppKalaha;
@@ -122,7 +119,7 @@ public class State {
                     }
                 }
             }
-            nextPlayerTurn = opponentId;
+            playerTurn = opponentId;
         }
         int sum = 0;
         for (int i = start; i < stop; i++) {

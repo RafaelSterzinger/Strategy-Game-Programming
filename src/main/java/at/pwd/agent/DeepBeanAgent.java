@@ -31,7 +31,7 @@ public class DeepBeanAgent implements MancalaAgent {
 
     @Override
     public MancalaAgentAction doTurn(int computationTime, MancalaGame mancalaGame) {
-        return tree.mctSearch(mancalaGame, computationTime*1000-100);
+        return null;
     }
 
     @Override

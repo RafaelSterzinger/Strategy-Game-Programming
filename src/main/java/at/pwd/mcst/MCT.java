@@ -1,8 +1,6 @@
 package at.pwd.mcst;
 
-import at.pwd.boardgame.game.base.WinState;
-import at.pwd.boardgame.game.mancala.MancalaGame;
-import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
+import at.pwd.game.State;
 
 import java.util.List;
 import java.util.Random;
@@ -12,20 +10,20 @@ public class MCT {
 
     private static final Random RANDOM = new Random();
 
-    public MancalaAgentAction mctSearch(MancalaGame game, int timeInMillis) {
-        root = new MCTNode(game);
+    public int mctSearch(State state, int timeInMillis) {
+        root = new MCTNode(state);
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < timeInMillis) {
             MCTNode expansion = treePolicy(root);
-            WinState delta = defaultPolicy(expansion.getState());
+            int delta = defaultPolicy(expansion.getState());
             backup(expansion, delta);
         }
         root = root.getBestSuccessor();
-        return new MancalaAgentAction(root.getAction());
-    }
 
-    public MCTNode expand(MCTNode node) {
-        return node.randomMove();
+        // Should not modify state
+        assert state.equals(root.getState());
+
+        return root.getAction();
     }
 
     public MCTNode treePolicy(MCTNode node) {
@@ -33,31 +31,27 @@ public class MCT {
             if (node.isFullyExpanded()) {
                 node = node.getBestSuccessor();
             } else {
-                return expand(node);
+                return node.expand();
             }
         }
         return node;
     }
 
-    public WinState defaultPolicy(MancalaGame state) {
-        state = new MancalaGame(state); // copy original game
-        WinState result = state.checkIfPlayerWins();
+    public int defaultPolicy(State state) {
+        // copy original game
+        state = new State(state);
 
-        while (result.getState() == WinState.States.NOBODY) {
-            String play;
-            do {
-                List<String> legalMoves = state.getSelectableSlots();
-                play = legalMoves.get(RANDOM.nextInt(legalMoves.size()));
-            } while (state.selectSlot(play));
-            state.nextPlayer();
-            result = state.checkIfPlayerWins();
+        // play until done and return winner id
+        while (state.isNotDone()) {
+            List<Integer> legalMoves = state.getActionList();
+            int play = legalMoves.get(RANDOM.nextInt(legalMoves.size()));
+            state.update(play);
         }
-        return result;
+        return state.getWinner();
     }
 
-    private void backup(MCTNode current, WinState winState) {
-        boolean won = winState.getState() == WinState.States.SOMEONE &&
-                winState.getPlayerId() == this.root.getState().getState().getCurrentPlayer();
+    private void backup(MCTNode current, int winnerId) {
+        boolean won = winnerId == this.root.getState().getPlayerTurn();
         while (current != null) {
             // always increase visit count
             current.update(won);

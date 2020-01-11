@@ -1,8 +1,5 @@
 package at.pwd.mcst;
 
-import at.pwd.boardgame.game.base.WinState;
-import at.pwd.boardgame.game.mancala.MancalaGame;
-import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
 import at.pwd.game.State;
 
 import java.util.ArrayList;
@@ -14,7 +11,7 @@ public class MCTNode {
 
     private State state;
     private MCTNode parent;
-    private String action;
+    private Integer action;
 
     private List<MCTNode> children;
     private MCTNode bestSuccessor;
@@ -22,7 +19,7 @@ public class MCTNode {
     private int winCount;
     private int visitCount;
 
-    private List<String> possibleActions;
+    private List<Integer> possibleActions;
 
     private double currentValue;
 
@@ -31,6 +28,7 @@ public class MCTNode {
     public MCTNode(State state) {
         this.state = state;
         children = new ArrayList<>();
+        possibleActions = state.getActionList();
     }
 
     public State getState() {
@@ -66,17 +64,18 @@ public class MCTNode {
         bestSuccessor = best;
     }
 
-    public MCTNode randomMove() {
-        List<Integer> moves = state.getActionList();
-        State
-        if (!newState.selectSlot(action)) {
-            newState.nextPlayer();
-        }
-        MCTNode node = new MCTNode(newState);
-        node.action = action;
-        node.parent = this;
-        this.children.add(node);
-        return node;
+    /**
+     * Expands this node with a random action on a copy of this state and returns the child
+     *
+     * @return the new child
+     */
+    public MCTNode expand() {
+        assert !possibleActions.isEmpty();
+        action = possibleActions.remove(RANDOM.nextInt(possibleActions.size()));
+        MCTNode child = new MCTNode(this.state.step(action));
+        child.parent = this;
+        this.children.add(child);
+        return child;
     }
 
     public MCTNode getBestSuccessor() {
@@ -87,7 +86,7 @@ public class MCTNode {
         return parent;
     }
 
-    public String getAction() {
+    public int getAction() {
         return action;
     }
 }
