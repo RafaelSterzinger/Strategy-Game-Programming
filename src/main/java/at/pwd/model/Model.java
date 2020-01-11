@@ -7,24 +7,19 @@ import org.deeplearning4j.nn.conf.graph.MergeVertex;
 import org.deeplearning4j.nn.conf.layers.*;
 import org.deeplearning4j.nn.conf.preprocessor.CnnToFeedForwardPreProcessor;
 import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.activations.IActivation;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.learning.config.Sgd;
-import org.nd4j.linalg.lossfunctions.ILossFunction;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
-import org.nd4j.linalg.ops.transforms.Transforms;
-import org.nd4j.linalg.primitives.Pair;
 
 public class Model {
 
-    private static int cnn_filter_num = 128;
-    private static int cnn_filter_size = 3;
-    private static int res_layer_num = 2;
-    private static double l2_reg = 1e-4;
-    private static int value_fc_size = 256;
-    private static String residualName = "Res";
+    private static final int CNN_FILTER_NUM = 128;
+    private static final int CNN_FILTER_SIZE = 3;
+    private static final int RES_LAYER_NUM = 2;
+    private static final double L2_REG = 1e-4;
+    private static final int VALUE_FC_SIZE = 256;
+    private static final String RESIDUAL_NAME = "Res";
 
-    ComputationGraphConfiguration model;
+    private ComputationGraphConfiguration model;
 
     public Model() {
         ComputationGraphConfiguration.GraphBuilder builder = new NeuralNetConfiguration.Builder()
@@ -32,70 +27,70 @@ public class Model {
                 .graphBuilder()
                 .addInputs("Own", "Enemy")
                 .addLayer("Conv1", new Convolution1D.Builder()
-                        .nOut(cnn_filter_num)
-                        .kernelSize(cnn_filter_size)
+                        .nOut(CNN_FILTER_NUM)
+                        .kernelSize(CNN_FILTER_SIZE)
                         .convolutionMode(ConvolutionMode.Same)
-                        .l2(l2_reg)
+                        .l2(L2_REG)
                         .build(), "Own", "Enemy")
                 .addLayer("BatchNorm1", new BatchNormalization.Builder()
                         .build(), "Conv1")
                 .addLayer("Activation1", new ActivationLayer(Activation.RELU), "BatchNorm1");
 
-        for (int i = 0; i < res_layer_num; i++) {
+        for (int i = 0; i < RES_LAYER_NUM; i++) {
             if (i == 0) {
                 buildResidualBlock(builder, i, "Activation1");
             } else {
-                buildResidualBlock(builder, i, "Activation2_" + residualName + (i - 1));
+                buildResidualBlock(builder, i, "Activation2_" + RESIDUAL_NAME + (i - 1));
             }
         }
 
-        builder.addLayer("ResOut", new OutputLayer(), "Activation2_" + residualName + (res_layer_num - 1));
+        builder.addLayer("ResOut", new OutputLayer(), "Activation2_" + RESIDUAL_NAME + (RES_LAYER_NUM - 1));
 
         // Policy Head
         builder.addLayer("ConvPol", new Convolution1D.Builder()
                 .nOut(2)
                 .kernelSize(1)
-                .l2(l2_reg)
+                .l2(L2_REG)
                 .build(), "ResOut")
                 .addLayer("BatchNormPol", new BatchNormalization.Builder()
                         .build(), "ConvPol")
                 .addLayer("ActivationPol", new ActivationLayer(Activation.RELU), "BatchNormPol")
-                .addLayer("DensePol", new DenseLayer.Builder().nOut(6).l2(l2_reg).activation(Activation.SOFTMAX).build(), new CnnToFeedForwardPreProcessor(), "ActivationPol")
+                .addLayer("DensePol", new DenseLayer.Builder().nOut(6).l2(L2_REG).activation(Activation.SOFTMAX).build(), new CnnToFeedForwardPreProcessor(), "ActivationPol")
                 .addLayer("PolicyOut", new OutputLayer.Builder().lossFunction(LossFunctions.LossFunction.MSE).build(), "DensePol");
 
         // Value Head
         builder.addLayer("ConvVal", new Convolution1D.Builder()
                 .nOut(1)
                 .kernelSize(1)
-                .l2(l2_reg)
+                .l2(L2_REG)
                 .build(), "ResOut")
                 .addLayer("BatchNormVal", new BatchNormalization.Builder()
                         .build(), "ConvVal")
                 .addLayer("ActivationVal", new ActivationLayer(Activation.RELU), "BatchNormVal")
-                .addLayer("DenseVal1", new DenseLayer.Builder().nOut(value_fc_size).l2(l2_reg).activation(Activation.RELU).build(),"ActivationVal")
-                .addLayer("DenseVal2", new DenseLayer.Builder().nOut(1).l2(l2_reg).activation(Activation.TANH).build(), new CnnToFeedForwardPreProcessor(), "DenseVal1")
+                .addLayer("DenseVal1", new DenseLayer.Builder().nOut(VALUE_FC_SIZE).l2(L2_REG).activation(Activation.RELU).build(),"ActivationVal")
+                .addLayer("DenseVal2", new DenseLayer.Builder().nOut(1).l2(L2_REG).activation(Activation.TANH).build(), new CnnToFeedForwardPreProcessor(), "DenseVal1")
                 .addLayer("ValueOut", new OutputLayer.Builder().lossFunction(LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY).build(), "DenseVal2");
 
         this.model = builder.setOutputs("PolicyOut", "ValueOut").build();
     }
 
     private void buildResidualBlock(ComputationGraphConfiguration.GraphBuilder x, int num, String input) {
-        String name = residualName + num;
+        String name = RESIDUAL_NAME + num;
         x.addLayer("OutputInX_" + name, new OutputLayer(), input);
         x.addLayer("Conv1_" + name, new Convolution1D.Builder()
-                .nOut(cnn_filter_num)
-                .kernelSize(cnn_filter_size)
+                .nOut(CNN_FILTER_NUM)
+                .kernelSize(CNN_FILTER_SIZE)
                 .convolutionMode(ConvolutionMode.Same)
-                .l2(l2_reg)
+                .l2(L2_REG)
                 .build(), "OutputInX_" + name)
                 .addLayer("BatchNorm1_" + name, new BatchNormalization.Builder()
                         .build(), "Conv1_" + name)
                 .addLayer("Activation1_" + name, new ActivationLayer(Activation.RELU), "BatchNorm1_" + name)
                 .addLayer("Conv2_" + name, new Convolution1D.Builder()
-                        .nOut(cnn_filter_num)
-                        .kernelSize(cnn_filter_size)
+                        .nOut(CNN_FILTER_NUM)
+                        .kernelSize(CNN_FILTER_SIZE)
                         .convolutionMode(ConvolutionMode.Same)
-                        .l2(l2_reg)
+                        .l2(L2_REG)
                         .build(), "Activation1_" + name)
                 .addLayer("BatchNorm2_" + name, new BatchNormalization.Builder()
                         .build(), "Conv2_" + name)

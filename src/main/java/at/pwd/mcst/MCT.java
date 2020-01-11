@@ -7,7 +7,6 @@ import java.util.Random;
 
 public class MCT {
     private MCTNode root;
-
     private static final Random RANDOM = new Random();
 
     public int mctSearch(State state, int timeInMillis) {
@@ -15,8 +14,8 @@ public class MCT {
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < timeInMillis) {
             MCTNode expansion = treePolicy(root);
-            int delta = defaultPolicy(expansion.getState());
-            backup(expansion, delta);
+            int winner = defaultPolicy(expansion.getState());
+            backup(expansion, winner);
         }
         root = root.getBestSuccessor();
 
@@ -51,11 +50,12 @@ public class MCT {
     }
 
     private void backup(MCTNode current, int winnerId) {
+        assert current != null;
         boolean won = winnerId == this.root.getState().getPlayerTurn();
-        while (current != null) {
+        do {
             // always increase visit count
             current.update(won);
             current = current.getParent();
-        }
+        } while (current != null);
     }
 }
