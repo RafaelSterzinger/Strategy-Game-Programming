@@ -89,4 +89,8 @@ public class MCTNode {
     public int getAction() {
         return action;
     }
+
+    public List<MCTNode> getChildren() {
+        return children;
+    }
 }

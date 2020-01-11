@@ -2,21 +2,20 @@ package at.pwd.mcst;
 
 import at.pwd.game.State;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
 public class MCT {
     private MCTNode root;
     private static final Random RANDOM = new Random();
 
-    public int mctSearch(State state, int timeInMillis) {
-        root = new MCTNode(state);
-        long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < timeInMillis) {
-            MCTNode expansion = treePolicy(root);
-            int winner = defaultPolicy(expansion.getState());
-            backup(expansion, winner);
-        }
+    public int simulate() {
+        MCTNode expansion = treePolicy(root);
+        int winner = defaultPolicy(expansion.getState());
+        backup(expansion, winner);
+
         root = root.getBestSuccessor();
 
         // Should not modify state
@@ -30,6 +29,7 @@ public class MCT {
             if (node.isFullyExpanded()) {
                 node = node.getBestSuccessor();
             } else {
+
                 return node.expand();
             }
         }
@@ -57,5 +57,27 @@ public class MCT {
             current.update(won);
             current = current.getParent();
         } while (current != null);
+    }
+
+    public void changeRootTo(State state) {
+        Stack<MCTNode> stack = new Stack<>();
+        stack.addAll(root.getChildren());
+        MCTNode result = null;
+        do {
+            MCTNode currentNode = stack.pop();
+            if (currentNode.getState().equals(state)) {
+                result = currentNode;
+                break;
+            }
+            if (currentNode.getState().getPlayerTurn() != root.getState().getPlayerTurn()) {
+                stack.addAll(currentNode.getChildren());
+            }
+        } while (!stack.isEmpty());
+        root = result == null ? new MCTNode(state) : result;
+    }
+
+    public int finishMove() {
+        root = root.getBestSuccessor();
+        return root.getAction();
     }
 }

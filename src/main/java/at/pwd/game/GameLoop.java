@@ -45,4 +45,8 @@ public class GameLoop {
             }
         }
     }
+
+    private void playMatches(DeepBeanAgent player1, DeepBeanAgent player2, int episodes, int turns, Memory memory){
+
+    }
 }
