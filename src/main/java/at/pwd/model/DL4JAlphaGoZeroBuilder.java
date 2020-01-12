@@ -25,6 +25,7 @@ import org.deeplearning4j.nn.conf.graph.ElementWiseVertex.Op;
 import org.deeplearning4j.nn.conf.inputs.InputType;
 import org.deeplearning4j.nn.conf.layers.*;
 import org.deeplearning4j.nn.conf.preprocessor.CnnToFeedForwardPreProcessor;
+import org.deeplearning4j.nn.conf.preprocessor.FeedForwardToCnnPreProcessor;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Sgd;
@@ -58,7 +59,7 @@ class DL4JAlphaGoZeroBuilder {
         this.l2Reg = l2Reg;
 
         this.conf = new NeuralNetConfiguration.Builder()
-                .updater(new Sgd())
+                .updater(new Sgd(0.01f))
                 .weightInit(WeightInit.LECUN_NORMAL)
                 .graphBuilder().setInputTypes(InputType.recurrent(1,  14));
     }
@@ -116,7 +117,7 @@ class DL4JAlphaGoZeroBuilder {
                 addConvBatchNormBlock(firstBlock, inName, cnnFilterNum, true);
         String secondBnOut =
                 addConvBatchNormBlock(secondBlock, firstOut, cnnFilterNum, false);
-        conf.addVertex(mergeBlock, new ElementWiseVertex(Op.Add), firstBnOut, secondBnOut);
+        conf.addVertex(mergeBlock, new ElementWiseVertex(Op.Add), inName, secondBnOut);
         conf.addLayer(actBlock, new ActivationLayer.Builder().activation(Activation.RELU).build(), mergeBlock);
         return actBlock;
     }
