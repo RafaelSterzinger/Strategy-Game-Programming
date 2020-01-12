@@ -1,15 +1,22 @@
 package at.pwd.game;
 
 import at.pwd.agent.DeepBeanAgent;
+import at.pwd.model.Model;
 import at.pwd.agent.lowerBound.MancalaAlphaBetaAgent;
 import at.pwd.boardgame.game.agent.AgentAction;
 import at.pwd.boardgame.game.base.WinState;
 import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
+import org.nd4j.linalg.api.ndarray.INDArray;
 
 public class GameLoop {
 
     public static void main(String[] args) {
+        State state = new State();
+
+        Model model = new Model();
+        INDArray[] pred = model.predict(state);
+
         MancalaGame mancalaGame = new MancalaGame();
 
         DeepBeanAgent deepBeanAgent = new DeepBeanAgent();

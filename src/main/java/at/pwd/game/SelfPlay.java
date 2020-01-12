@@ -1,8 +1,6 @@
 package at.pwd.game;
 
 import at.pwd.agent.DeepBeanAgent;
-import at.pwd.boardgame.game.mancala.MancalaGame;
-import at.pwd.boardgame.services.GameFactory;
 import at.pwd.model.Model;
 
 public class SelfPlay {

@@ -19,7 +19,7 @@ public class MCT {
         root = root.getBestSuccessor();
 
         // Should not modify state
-        assert state.equals(root.getState());
+        //assert state.equals(root.getState());
 
         return root.getAction();
     }

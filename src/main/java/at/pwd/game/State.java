@@ -195,16 +195,16 @@ public class State {
     }
 
     public INDArray getStateForModel() {
-        int[][] array = new int[2][];
-        array[0] = Arrays.copyOf(board, board.length);
-        array[1] = Arrays.copyOf(board, board.length);
+        int[][][] array = new int[1][2][14];
+        array[0][0] = Arrays.copyOf(board, board.length);
+        array[0][1] = Arrays.copyOf(board, board.length);
         for (int i = 0; i < 7; i++) {
-            array[0][i] = board[i];
-            array[1][i] = 0;
+            array[0][0][i] = board[i];
+            array[0][1][i] = 0;
         }
         for (int i = 7; i < 14; i++) {
-            array[0][i] = 0;
-            array[1][i] = board[i];
+            array[0][0][i] = 0;
+            array[0][1][i] = board[i];
         }
         return Nd4j.createFromArray(array);
     }
