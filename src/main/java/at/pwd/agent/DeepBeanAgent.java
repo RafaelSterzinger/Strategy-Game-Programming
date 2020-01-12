@@ -3,7 +3,6 @@ package at.pwd.agent;
 import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgent;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
-import at.pwd.game.State;
 import at.pwd.mcst.MCT;
 import at.pwd.model.Model;
 
@@ -37,7 +36,7 @@ public class DeepBeanAgent implements MancalaAgent {
     public String toString() {
         return "DeepBeanAgent";
     }
-
+/*
     public int act(State state, int turns) {
         tree.changeRootTo(state);
 
@@ -48,5 +47,10 @@ public class DeepBeanAgent implements MancalaAgent {
         return tree.finishMove();
     }
 
+    private void getPrediction(State state){
+
+    }
+
+ */
 
 }
