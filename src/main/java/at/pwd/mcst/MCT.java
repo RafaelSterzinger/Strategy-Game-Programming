@@ -1,28 +1,62 @@
 package at.pwd.mcst;
 
 import at.pwd.game.State;
+import at.pwd.model.Model;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public class MCT {
     private MCTNode root;
     private static final Random RANDOM = new Random();
+    private Map<String, MCTNode> nodes;
+    private Model model;
 
-    public int simulate() {
-        MCTNode expansion = treePolicy(root);
-        int winner = defaultPolicy(expansion.getState());
-        backup(expansion, winner);
-
-        root = root.getBestSuccessor();
-
-        // Should not modify state
-        assert state.equals(root.getState());
-
-        return root.getAction();
+    public MCT(Model model, MCTNode root, Map<String, MCTNode> nodes) {
+        this.root = root;
+        this.nodes = nodes;
+        this.model = model;
     }
+
+    public MCT() {
+        this(new Model(), new MCTNode(new State()), new HashMap<>());
+    }
+
+    public void simulate() {
+        List<MCTEdge> path = new LinkedList<>();
+        MCTNode leaf = getBestLeaf(root, path);
+        MCTNode node = expand(leaf);
+        backup(leaf, winner);
+    }
+
+    private MCTNode getBestLeaf(MCTNode node, List<MCTEdge> path) {
+        while (!node.isFullyExpanded()) {
+            int edgesVisitCountSum = node.getEdgesVisitCountSum();
+            double maxUpperConfidenceBound = -1234;
+            MCTEdge bestEdge = null;
+            for (MCTEdge edge : node) {
+                // TODO: add dirichlet noise if root node
+                // Variant of the Upper Confidence bounds applied to Trees (PUCT) algorithm:
+                double upperConfidenceBound = edge.getMeanValue() + edge.getExplorationRate(edgesVisitCountSum);
+                if (upperConfidenceBound > maxUpperConfidenceBound) {
+                    maxUpperConfidenceBound = upperConfidenceBound;
+                    bestEdge = edge;
+                }
+            }
+            path.add(bestEdge);
+            node = bestEdge.getOut();
+        }
+        return node;
+    }
+
+    private MCTNode expand(MCTNode node) {
+        // TODO check if new edge should be added to path
+
+    }
+
+    private void backup() {
+
+    }
+
 
     public MCTNode treePolicy(MCTNode node) {
         while (!node.isTerminal()) {
@@ -35,6 +69,7 @@ public class MCT {
         }
         return node;
     }
+
 
     public int defaultPolicy(State state) {
         // copy original game

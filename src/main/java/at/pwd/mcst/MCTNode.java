@@ -3,17 +3,17 @@ package at.pwd.mcst;
 import at.pwd.game.State;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-public class MCTNode {
+public class MCTNode implements Iterable<MCTEdge> {
     private static final Random RANDOM = new Random();
 
     private State state;
-    private MCTNode parent;
     private Integer action;
 
-    private List<MCTNode> children;
+    private List<MCTEdge> edges;
     private MCTNode bestSuccessor;
 
     private int winCount;
@@ -27,7 +27,7 @@ public class MCTNode {
 
     public MCTNode(State state) {
         this.state = state;
-        children = new ArrayList<>();
+        edges = new ArrayList<>();
         possibleActions = state.getActionList();
     }
 
@@ -45,6 +45,11 @@ public class MCTNode {
 
     public boolean isFullyExpanded() {
         return possibleActions.isEmpty();
+    }
+
+    @Override
+    public Iterator<MCTEdge> iterator() {
+        return edges.iterator();
     }
 
     public void update(boolean won) {
@@ -82,15 +87,15 @@ public class MCTNode {
         return bestSuccessor;
     }
 
-    public MCTNode getParent() {
-        return parent;
-    }
-
     public int getAction() {
         return action;
     }
 
-    public List<MCTNode> getChildren() {
-        return children;
+    public int getEdgesVisitCountSum() {
+        return edges.stream().mapToInt(MCTEdge::getVisitedCount).sum();
+    }
+
+    public List<MCTEdge> getEdges() {
+        return edges;
     }
 }
