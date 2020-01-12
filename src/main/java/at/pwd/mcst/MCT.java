@@ -22,10 +22,10 @@ public class MCT {
     }
 
     public void simulate() {
-        List<MCTEdge> path = new LinkedList<>();
-        MCTNode leaf = getBestLeaf(root, path);
-        MCTNode node = expand(leaf);
-        backup(leaf, winner);
+        //List<MCTEdge> path = new LinkedList<>();
+        //MCTNode leaf = getBestLeaf(root, path);
+        //MCTNode node = expand(leaf);
+        //backup(leaf, winner);
     }
 
     private MCTNode getBestLeaf(MCTNode node, List<MCTEdge> path) {
@@ -50,7 +50,7 @@ public class MCT {
 
     private MCTNode expand(MCTNode node) {
         // TODO check if new edge should be added to path
-
+        return null;
     }
 
     private void backup() {
@@ -90,13 +90,13 @@ public class MCT {
         do {
             // always increase visit count
             current.update(won);
-            current = current.getParent();
+            //current = current.getParent();
         } while (current != null);
     }
 
     public void changeRootTo(State state) {
         Stack<MCTNode> stack = new Stack<>();
-        stack.addAll(root.getChildren());
+        //stack.addAll(root.getChildren());
         MCTNode result = null;
         do {
             MCTNode currentNode = stack.pop();
@@ -105,7 +105,7 @@ public class MCT {
                 break;
             }
             if (currentNode.getState().getPlayerTurn() != root.getState().getPlayerTurn()) {
-                stack.addAll(currentNode.getChildren());
+                //stack.addAll(currentNode.getChildren());
             }
         } while (!stack.isEmpty());
         root = result == null ? new MCTNode(state) : result;

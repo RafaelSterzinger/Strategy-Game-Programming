@@ -7,7 +7,7 @@ import at.pwd.boardgame.game.agent.AgentAction;
 import at.pwd.boardgame.game.base.WinState;
 import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
-import org.nd4j.linalg.api.ndarray.INDArray;
+
 
 public class GameLoop {
 
@@ -15,7 +15,6 @@ public class GameLoop {
         State state = new State();
 
         Model model = new Model();
-        INDArray[] pred = model.predict(state);
 
         MancalaGame mancalaGame = new MancalaGame();
 
@@ -53,7 +52,5 @@ public class GameLoop {
         }
     }
 
-    private void playMatches(DeepBeanAgent player1, DeepBeanAgent player2, int episodes, int turns, Memory memory){
 
-    }
 }

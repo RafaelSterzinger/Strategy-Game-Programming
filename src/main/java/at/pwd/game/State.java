@@ -1,10 +1,9 @@
 package at.pwd.game;
 
-import at.pwd.boardgame.game.mancala.MancalaGame;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
 
-import java.util.ArrayList;
+import org.tensorflow.Tensor;
+
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -190,14 +189,8 @@ public class State {
         return mask;
     }
 
-    public INDArray getMask() {
-        return Nd4j.create(getBooleanMask());
-    }
-
-    public INDArray getStateForModel() {
-        int[][][] array = new int[1][2][14];
-        array[0][0] = Arrays.copyOf(board, board.length);
-        array[0][1] = Arrays.copyOf(board, board.length);
+    public Tensor<?> getStateForModel() {
+        float[][][] array = new float[1][2][14];
         for (int i = 0; i < 7; i++) {
             array[0][0][i] = board[i];
             array[0][1][i] = 0;
@@ -206,7 +199,7 @@ public class State {
             array[0][0][i] = 0;
             array[0][1][i] = board[i];
         }
-        return Nd4j.createFromArray(array);
+        return Tensor.create(array);
     }
 
     public boolean isDone() {

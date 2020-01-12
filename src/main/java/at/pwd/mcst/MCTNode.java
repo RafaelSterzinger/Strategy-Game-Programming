@@ -60,12 +60,12 @@ public class MCTNode implements Iterable<MCTEdge> {
         this.currentValue = wC / vC + C * Math.sqrt(2 * Math.log(visitCount) / vC);
         MCTNode best = null;
         double value = 0;
-        for (MCTNode m : children) {
-            if (best == null || m.currentValue > value) {
-                value = m.currentValue;
-                best = m;
-            }
-        }
+       // for (MCTNode m : children) {
+        //    if (best == null || m.currentValue > value) {
+        //        value = m.currentValue;
+       //         best = m;
+        //    }
+        //}
         bestSuccessor = best;
     }
 
@@ -78,8 +78,8 @@ public class MCTNode implements Iterable<MCTEdge> {
         assert !possibleActions.isEmpty();
         action = possibleActions.remove(RANDOM.nextInt(possibleActions.size()));
         MCTNode child = new MCTNode(this.state.step(action));
-        child.parent = this;
-        this.children.add(child);
+       // child.parent = this;
+        //this.children.add(child);
         return child;
     }
 
