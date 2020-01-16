@@ -3,10 +3,13 @@ package at.pwd.mcst;
 import at.pwd.game.State;
 import at.pwd.model.Model;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MCT {
     private MCTNode root;
+    private int playerId;
     private static final Random RANDOM = new Random();
     private Map<String, MCTNode> nodes;
     private Model model;
@@ -15,21 +18,39 @@ public class MCT {
         this.root = root;
         this.nodes = nodes;
         this.model = model;
+        playerId = root.getState().getPlayerTurn();
     }
 
-    public MCT() {
+    public MCT() throws IOException {
         this(new Model(), new MCTNode(new State()), new HashMap<>());
     }
 
+    public void changeRootTo(State state) {
+        Stack<MCTNode> stack = new Stack<>();
+        stack.addAll(root.getEdges().stream().map(MCTEdge::getOut).collect(Collectors.toList()));
+        MCTNode result = null;
+        do {
+            MCTNode currentNode = stack.pop();
+            if (currentNode.getState().equals(state)) {
+                result = currentNode;
+                break;
+            }
+            if (currentNode.getState().getPlayerTurn() != root.getState().getPlayerTurn()) {
+                stack.addAll(root.getEdges().stream().map(MCTEdge::getOut).collect(Collectors.toList()));
+            }
+        } while (!stack.isEmpty());
+        root = result == null ? new MCTNode(state) : result;
+    }
+
     public void simulate() {
-        //List<MCTEdge> path = new LinkedList<>();
-        //MCTNode leaf = getBestLeaf(root, path);
-        //MCTNode node = expand(leaf);
-        //backup(leaf, winner);
+        List<MCTEdge> path = new LinkedList<>();
+        MCTNode leaf = getBestLeaf(root, path);
+        float value = expandAndEvaluate(leaf);
+        backup(path, value);
     }
 
     private MCTNode getBestLeaf(MCTNode node, List<MCTEdge> path) {
-        while (!node.isFullyExpanded()) {
+        while (!node.isExpanded()) {
             int edgesVisitCountSum = node.getEdgesVisitCountSum();
             double maxUpperConfidenceBound = -1234;
             MCTEdge bestEdge = null;
@@ -48,71 +69,36 @@ public class MCT {
         return node;
     }
 
-    private MCTNode expand(MCTNode node) {
+    private float expandAndEvaluate(MCTNode leaf) {
         // TODO check if new edge should be added to path
-        return null;
-    }
-
-    private void backup() {
-
-    }
-
-
-    public MCTNode treePolicy(MCTNode node) {
-        while (!node.isTerminal()) {
-            if (node.isFullyExpanded()) {
-                node = node.getBestSuccessor();
+        float value;
+        if (!leaf.isTerminal()) {
+            model.fit(leaf.getState());
+            leaf.expand(nodes, model.getQuality());
+            value = model.getValue();
+        } else {
+            int winner = leaf.getResult();
+            assert winner != State.UNDEFINED_ID;
+            if (winner == State.NOBODY_ID) {
+                value = 0.5f;
+            } else if (winner == root.getState().getPlayerTurn()) {
+                value = 1.0f;
             } else {
-
-                return node.expand();
+                value = 0.0f;
             }
         }
-        return node;
+        return value;
     }
 
-
-    public int defaultPolicy(State state) {
-        // copy original game
-        state = new State(state);
-
-        // play until done and return winner id
-        while (state.isNotDone()) {
-            List<Integer> legalMoves = state.getActionList();
-            int play = legalMoves.get(RANDOM.nextInt(legalMoves.size()));
-            state.update(play);
+    private void backup(List<MCTEdge> path, float value) {
+        for (MCTEdge edge : path) {
+            int playerTurn = edge.getPlayerTurn();
+            edge.update(playerTurn == playerId ? value : value * -1);
         }
-        return state.getWinner();
     }
 
-    private void backup(MCTNode current, int winnerId) {
-        assert current != null;
-        boolean won = winnerId == this.root.getState().getPlayerTurn();
-        do {
-            // always increase visit count
-            current.update(won);
-            //current = current.getParent();
-        } while (current != null);
-    }
-
-    public void changeRootTo(State state) {
-        Stack<MCTNode> stack = new Stack<>();
-        //stack.addAll(root.getChildren());
-        MCTNode result = null;
-        do {
-            MCTNode currentNode = stack.pop();
-            if (currentNode.getState().equals(state)) {
-                result = currentNode;
-                break;
-            }
-            if (currentNode.getState().getPlayerTurn() != root.getState().getPlayerTurn()) {
-                //stack.addAll(currentNode.getChildren());
-            }
-        } while (!stack.isEmpty());
-        root = result == null ? new MCTNode(state) : result;
-    }
 
     public int finishMove() {
-        root = root.getBestSuccessor();
-        return root.getAction();
+        return -1;
     }
 }

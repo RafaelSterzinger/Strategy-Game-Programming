@@ -58,4 +58,10 @@ public class MCTEdge {
     public int getAction() {
         return action;
     }
+
+    public void update(float value) {
+        visitedCount++;
+        totalValue += value;
+        meanValue = totalValue / visitedCount;
+    }
 }

@@ -1,6 +1,7 @@
 package at.pwd.game;
 
 
+import at.pwd.boardgame.game.mancala.MancalaGame;
 import org.tensorflow.Tensor;
 
 
@@ -27,6 +28,15 @@ public class State {
 
     public State() {
         board = new int[14];
+    }
+
+    public State(int[] board) {
+        assert board.length == 14;
+        this.board = board;
+    }
+
+    public State(boolean randomStart) {
+        board = new int[14];
         reset(true);
     }
 
@@ -35,6 +45,7 @@ public class State {
         playerTurn = state.playerTurn;
         winner = state.winner;
     }
+
 
     public void reset(boolean randomStart) {
         board[0] = 6;
@@ -148,6 +159,24 @@ public class State {
         return playerTurn;
     }
 
+    public boolean[] getActionMask() {
+        boolean[] mask = new boolean[6];
+        if (playerTurn == WHITE_ID) {
+            for (int i = 0; i < 6; i++) {
+                if (board[i] > 0) {
+                    mask[i] = true;
+                }
+            }
+        } else {
+            for (int i = 7; i < 13; i++) {
+                if (board[i] > 0) {
+                    mask[i - 7] = true;
+                }
+            }
+        }
+        return mask;
+    }
+
     public List<Integer> getActionList() {
         List<Integer> actions = new LinkedList<>();
         if (playerTurn == WHITE_ID) {
@@ -257,6 +286,10 @@ public class State {
         return sb.toString();
     }
 
+    public String getId() {
+        return String.format("%d: %s", playerTurn, Arrays.toString(board));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -269,4 +302,6 @@ public class State {
     public int hashCode() {
         return Arrays.hashCode(board);
     }
+
+
 }

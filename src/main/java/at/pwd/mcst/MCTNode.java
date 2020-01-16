@@ -2,33 +2,20 @@ package at.pwd.mcst;
 
 import at.pwd.game.State;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class MCTNode implements Iterable<MCTEdge> {
-    private static final Random RANDOM = new Random();
-
     private State state;
-    private Integer action;
 
     private List<MCTEdge> edges;
-    private MCTNode bestSuccessor;
 
-    private int winCount;
-    private int visitCount;
-
-    private List<Integer> possibleActions;
-
-    private double currentValue;
+    private boolean expanded = false;
 
     private static final double C = 1.0 / Math.sqrt(2.0);
 
     public MCTNode(State state) {
         this.state = state;
-        edges = new ArrayList<>();
-        possibleActions = state.getActionList();
+        this.edges = new ArrayList<>();
     }
 
     public State getState() {
@@ -43,8 +30,8 @@ public class MCTNode implements Iterable<MCTEdge> {
         return state.getWinner();
     }
 
-    public boolean isFullyExpanded() {
-        return possibleActions.isEmpty();
+    public boolean isExpanded() {
+        return expanded;
     }
 
     @Override
@@ -52,43 +39,24 @@ public class MCTNode implements Iterable<MCTEdge> {
         return edges.iterator();
     }
 
-    public void update(boolean won) {
-        winCount += won ? 1 : 0;
-        visitCount++;
-        double wC = this.winCount;
-        double vC = this.visitCount;
-        this.currentValue = wC / vC + C * Math.sqrt(2 * Math.log(visitCount) / vC);
-        MCTNode best = null;
-        double value = 0;
-       // for (MCTNode m : children) {
-        //    if (best == null || m.currentValue > value) {
-        //        value = m.currentValue;
-       //         best = m;
-        //    }
-        //}
-        bestSuccessor = best;
-    }
-
     /**
-     * Expands this node with a random action on a copy of this state and returns the child
-     *
-     * @return the new child
+     * Expands this node
      */
-    public MCTNode expand() {
-        assert !possibleActions.isEmpty();
-        action = possibleActions.remove(RANDOM.nextInt(possibleActions.size()));
-        MCTNode child = new MCTNode(this.state.step(action));
-       // child.parent = this;
-        //this.children.add(child);
-        return child;
-    }
-
-    public MCTNode getBestSuccessor() {
-        return bestSuccessor;
-    }
-
-    public int getAction() {
-        return action;
+    public void expand(Map<String, MCTNode> nodes, float[] probs) {
+        assert !expanded;
+        boolean[] mask = state.getActionMask();
+        for (int action = 0; action < probs.length; action++) {
+            if (mask[action]) {
+                State newState = this.state.step(action);
+                MCTNode child = nodes.get(newState.getId());
+                if (child == null) {
+                    child = new MCTNode(newState);
+                }
+                // TODO find out if player turn is right
+                MCTEdge edge = new MCTEdge(this, child, newState.getPlayerTurn(), action);
+                edges.add(edge);
+            }
+        }
     }
 
     public int getEdgesVisitCountSum() {
@@ -97,5 +65,14 @@ public class MCTNode implements Iterable<MCTEdge> {
 
     public List<MCTEdge> getEdges() {
         return edges;
+    }
+
+    public void add(MCTEdge edge) {
+        this.edges.add(edge);
+    }
+
+    @Override
+    public String toString() {
+        return state.getId();
     }
 }
