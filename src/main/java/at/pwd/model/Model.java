@@ -17,13 +17,13 @@ public class Model {
     float[][] probs = new float[1][6];
     float[][] value = new float[1][1];
 
-    public Model() throws IOException {
+    public Model() {
         URL url = this.getClass().getClassLoader().getResource("tf_safe");
         if(url != null) {
             String path = url.getPath();
             this.model = SavedModelBundle.load(path, "serve");
         } else {
-            throw new IOException("Could not load Model");
+            System.out.println("Could not find model!");
         }
     }
 

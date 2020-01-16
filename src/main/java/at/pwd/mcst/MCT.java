@@ -21,13 +21,13 @@ public class MCT {
         playerId = root.getState().getPlayerTurn();
     }
 
-    public MCT() throws IOException {
+    public MCT() {
         this(new Model(), new MCTNode(new State()), new HashMap<>());
     }
 
     public void changeRootTo(State state) {
         Stack<MCTNode> stack = new Stack<>();
-        stack.addAll(root.getEdges().stream().map(MCTEdge::getOut).collect(Collectors.toList()));
+        stack.add(root);
         MCTNode result = null;
         do {
             MCTNode currentNode = stack.pop();
@@ -50,7 +50,7 @@ public class MCT {
     }
 
     private MCTNode getBestLeaf(MCTNode node, List<MCTEdge> path) {
-        while (!node.isExpanded()) {
+        while (node.isExpanded()) {
             int edgesVisitCountSum = node.getEdgesVisitCountSum();
             double maxUpperConfidenceBound = -1234;
             MCTEdge bestEdge = null;
@@ -99,6 +99,14 @@ public class MCT {
 
 
     public int finishMove() {
-        return -1;
+        float best = -9999;
+        int action = 0;
+        for (MCTEdge edge : root) {
+            if (best < edge.getMeanValue()) {
+                best = edge.getMeanValue();
+                action = edge.getAction();
+            }
+        }
+        return action;
     }
 }

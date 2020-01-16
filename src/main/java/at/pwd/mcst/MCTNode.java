@@ -67,10 +67,6 @@ public class MCTNode implements Iterable<MCTEdge> {
         return edges;
     }
 
-    public void add(MCTEdge edge) {
-        this.edges.add(edge);
-    }
-
     @Override
     public String toString() {
         return state.getId();

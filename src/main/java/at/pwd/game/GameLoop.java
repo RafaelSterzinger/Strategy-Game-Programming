@@ -8,10 +8,12 @@ import at.pwd.boardgame.game.base.WinState;
 import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
 
+import java.io.IOException;
+
 
 public class GameLoop {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         State state = new State();
 
         Model model = new Model();

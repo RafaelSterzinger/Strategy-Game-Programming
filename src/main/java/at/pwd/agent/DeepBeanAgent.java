@@ -46,12 +46,11 @@ public class DeepBeanAgent implements MancalaAgent {
 
     private State mapToState(MancalaGame mancalaGame) {
         if (idMap == null) {
-            List<String> ids = new ArrayList<>();
-            addIdsToList(ids, mancalaGame);
+            idMap = new String[14];
+            int index = 0;
+            index = addIdsToList(index, mancalaGame);
             mancalaGame.nextPlayer();
-            addIdsToList(ids, mancalaGame);
-            idMap = (String[]) ids.toArray();
-            assert idMap.length == 14;
+            addIdsToList(index, mancalaGame);
         }
         int[] board = new int[14];
         for (int i = 0; i < board.length; i++) {
@@ -60,10 +59,14 @@ public class DeepBeanAgent implements MancalaAgent {
         return new State(board);
     }
 
-    private void addIdsToList(List<String> ids, MancalaGame mancalaGame) {
+    private int addIdsToList(int index, MancalaGame mancalaGame) {
         List<String> slotIds = mancalaGame.getSelectableSlots();
         String depositId = mancalaGame.getBoard().getDepotOfPlayer(mancalaGame.getState().getCurrentPlayer());
-        slotIds.add(depositId);
+        for (String id:slotIds) {
+            idMap[index++] = id;
+        }
+        idMap[index++] = depositId;
+        return index;
     }
 
 
