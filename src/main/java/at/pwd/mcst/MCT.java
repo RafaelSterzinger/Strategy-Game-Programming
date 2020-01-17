@@ -37,17 +37,17 @@ public class MCT {
 
     private MCTNode getBestLeaf(MCTNode node, List<MCTEdge> path) {
         while (!node.isLeaf() && !node.isTerminal()) {
-            int edgesVisitCountSum = node.getEdgesVisitCountSum();
             Iterator<MCTEdge> it = node.iterator();
-// TODO Check calculation
             MCTEdge bestEdge = it.next();
-            double maxUpperConfidenceBound = bestEdge.getMeanValue() + bestEdge.getExplorationRate(edgesVisitCountSum);
+
+            int sumVisitCount = node.getSumVisitCount();
+            double maxUpperConfidenceBound = bestEdge.getQ() + bestEdge.getU(sumVisitCount);
 
             while (it.hasNext()) {
                 // TODO: add dirichlet noise if root node
                 // Variant of the Upper Confidence bounds applied to Trees (PUCT) algorithm:
                 MCTEdge edge = it.next();
-                double upperConfidenceBound = edge.getMeanValue() + edge.getExplorationRate(edgesVisitCountSum);
+                double upperConfidenceBound = edge.getQ() + edge.getU(sumVisitCount);
                 if (upperConfidenceBound > maxUpperConfidenceBound) {
                     maxUpperConfidenceBound = upperConfidenceBound;
                     bestEdge = edge;
@@ -91,8 +91,8 @@ public class MCT {
         float best = -9999;
         int action = 0;
         for (MCTEdge edge : root) {
-            if (best < edge.getMeanValue()) {
-                best = edge.getMeanValue();
+            if (best < edge.getQ()) {
+                best = edge.getQ();
                 action = edge.getAction();
             }
         }

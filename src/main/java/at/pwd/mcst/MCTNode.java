@@ -8,7 +8,6 @@ public class MCTNode implements Iterable<MCTEdge> {
     private State state;
     private List<MCTEdge> edges;
     private boolean leaf;
-    private static final double C = 1.0 / Math.sqrt(2.0);
 
     public MCTNode(State state) {
         this.state = state;
@@ -61,12 +60,8 @@ public class MCTNode implements Iterable<MCTEdge> {
         leaf = false;
     }
 
-    public int getEdgesVisitCountSum() {
-        return edges.stream().mapToInt(MCTEdge::getVisitedCount).sum();
-    }
-
-    public List<MCTEdge> getEdges() {
-        return edges;
+    public int getSumVisitCount() {
+        return edges.stream().mapToInt(MCTEdge::getN).sum();
     }
 
     @Override
