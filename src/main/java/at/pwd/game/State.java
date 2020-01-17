@@ -113,17 +113,15 @@ public class State {
             int oppositeIndex = mapOpposite[index];
             if (oppositeIndex != -1 && board[index] == 1) {
                 int oppositeValue = board[oppositeIndex];
-                if (oppositeValue > 0) {
-                    board[ownKalaha] += oppositeValue + 1;
-                    board[index] = 0;
-                    board[oppositeIndex] = 0;
-                    int sum = 0;
-                    for (int i = start; i < stop; i++) {
-                        sum += board[mapOpposite[i]];
-                    }
-                    if (sum == 0) {
-                        determineWinner(oppKalaha);
-                    }
+                board[ownKalaha] += oppositeValue + 1;
+                board[index] = 0;
+                board[oppositeIndex] = 0;
+                int sum = 0;
+                for (int i = start; i < stop; i++) {
+                    sum += board[mapOpposite[i]];
+                }
+                if (sum == 0) {
+                    determineWinner(ownKalaha);
                 }
             }
             playerTurn = opponentId;
@@ -137,15 +135,18 @@ public class State {
         }
     }
 
-    private void determineWinner(int oppKalaha) {
-        for (int i = 0; i < board[i]; i++) {
-            board[oppKalaha] += board[i];
+    private void determineWinner(int kalaha) {
+        for (int i = 0; i < WHITE_KALAHA; i++) {
+            board[kalaha] += board[i];
+            board[i] = 0;
+        }for (int i = WHITE_KALAHA + 1; i < BLACK_KALAHA; i++) {
+            board[kalaha] += board[i];
             board[i] = 0;
         }
         if (board[WHITE_KALAHA] < board[BLACK_KALAHA]) {
-            winner = WHITE_ID;
-        } else if (board[WHITE_KALAHA] > board[BLACK_KALAHA]) {
             winner = BLACK_ID;
+        } else if (board[WHITE_KALAHA] > board[BLACK_KALAHA]) {
+            winner = WHITE_ID;
         } else {
             winner = NOBODY_ID;
         }
