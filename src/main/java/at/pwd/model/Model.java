@@ -29,7 +29,7 @@ public class Model {
 
     public void predict(State state) {
         List<Tensor<?>> results = model.session().runner()
-                .feed("serving_default_input_1:0", new State().getStateForModel())
+                .feed("serving_default_input_1:0", state.getStateForModel())
                 .fetch("StatefulPartitionedCall", 0)
                 .fetch("StatefulPartitionedCall", 1)
                 .run();
@@ -37,7 +37,7 @@ public class Model {
         results.get(1).copyTo(value);
     }
 
-    public float[] getQuality() {
+    public float[] getPolicy() {
         return probs[0];
     }
 

@@ -4,41 +4,28 @@ import at.pwd.game.State;
 import at.pwd.model.Model;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MCT {
     private MCTNode root;
-    private int playerId;
-    private static final Random RANDOM = new Random();
     private Map<String, MCTNode> nodes;
     private Model model;
 
-    public MCT(Model model, MCTNode root, Map<String, MCTNode> nodes) {
-        this.root = root;
+    public MCT(Model model, Map<String, MCTNode> nodes) {
         this.nodes = nodes;
         this.model = model;
-        playerId = root.getState().getPlayerTurn();
     }
 
     public MCT() {
-        this(new Model(), new MCTNode(new State()), new HashMap<>());
+        this(new Model(), new HashMap<>());
     }
 
     public void changeRootTo(State state) {
-        Stack<MCTNode> stack = new Stack<>();
-        stack.add(root);
-        MCTNode result = null;
-        do {
-            MCTNode currentNode = stack.pop();
-            if (currentNode.getState().equals(state)) {
-                result = currentNode;
-                break;
-            }
-            if (currentNode.getState().getPlayerTurn() != root.getState().getPlayerTurn()) {
-                stack.addAll(root.getEdges().stream().map(MCTEdge::getOut).collect(Collectors.toList()));
-            }
-        } while (!stack.isEmpty());
-        root = result == null ? new MCTNode(state) : result;
+        String id = state.getId();
+        root = nodes.get(id);
+        if (root == null) {
+            root = new MCTNode(state);
+            nodes.put(id, root);
+        }
     }
 
     public void simulate() {
@@ -49,15 +36,17 @@ public class MCT {
     }
 
     private MCTNode getBestLeaf(MCTNode node, List<MCTEdge> path) {
-        while (node.isExpanded() && !node.isTerminal()) {
+        while (!node.isLeaf() && !node.isTerminal()) {
             int edgesVisitCountSum = node.getEdgesVisitCountSum();
             Iterator<MCTEdge> it = node.iterator();
+
             MCTEdge bestEdge = it.next();
             double maxUpperConfidenceBound = bestEdge.getMeanValue() + bestEdge.getExplorationRate(edgesVisitCountSum);
+
             while (it.hasNext()) {
                 // TODO: add dirichlet noise if root node
                 // Variant of the Upper Confidence bounds applied to Trees (PUCT) algorithm:
-                MCTEdge edge=it.next();
+                MCTEdge edge = it.next();
                 double upperConfidenceBound = edge.getMeanValue() + edge.getExplorationRate(edgesVisitCountSum);
                 if (upperConfidenceBound > maxUpperConfidenceBound) {
                     maxUpperConfidenceBound = upperConfidenceBound;
@@ -75,7 +64,7 @@ public class MCT {
         float value;
         if (!leaf.isTerminal()) {
             model.predict(leaf.getState());
-            leaf.expand(nodes, model.getQuality());
+            leaf.expand(nodes, model.getPolicy());
             value = model.getValue();
         } else {
             // TODO check if that is nice
@@ -83,10 +72,8 @@ public class MCT {
             assert winner != State.UNDEFINED_ID;
             if (winner == State.NOBODY_ID) {
                 value = 0.0f;
-            } else if (winner == root.getState().getPlayerTurn()) {
-                value = 1.0f;
             } else {
-                value = -1.0f;
+                value = 1.0f;
             }
         }
         return value;
@@ -95,7 +82,7 @@ public class MCT {
     private void backup(List<MCTEdge> path, float value) {
         for (MCTEdge edge : path) {
             int playerTurn = edge.getPlayerTurn();
-            edge.update(playerTurn == playerId ? value : value * -1);
+            edge.update(playerTurn == root.getState().getPlayerTurn() ? value : value * -1);
         }
     }
 

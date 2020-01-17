@@ -3,7 +3,6 @@ package at.pwd.mcst;
 public class MCTEdge {
     private MCTNode in;
     private MCTNode out;
-    private int playerTurn;
 
     private static final float CPUCT = 1;
 
@@ -12,12 +11,12 @@ public class MCTEdge {
     public int visitedCount; // number of visits
     public float totalValue; // total Value of next state
     public float meanValue; // mean value of the next state
-    public float prior; // the probability of selecting the action that lead to this state
+    public float moveProbability; // the probability of selecting the action that lead to this state
 
-    public MCTEdge(MCTNode in, MCTNode out, int playerTurn, int action) {
+    public MCTEdge(MCTNode in, MCTNode out, float moveProbability, int action) {
         this.in = in;
         this.out = out;
-        this.playerTurn = playerTurn;
+        this.moveProbability = moveProbability;
         this.action = action;
     }
 
@@ -30,9 +29,7 @@ public class MCTEdge {
     }
 
     public double getExplorationRate(int edgeVisitCountSum) {
-        return meanValue + CPUCT * prior *
-                (Math.sqrt(edgeVisitCountSum) /
-                        (1 + visitedCount));
+        return CPUCT * moveProbability * ((Math.sqrt(edgeVisitCountSum) / (1 + visitedCount)));
     }
 
     public int getVisitedCount() {
@@ -47,12 +44,8 @@ public class MCTEdge {
         return meanValue;
     }
 
-    public float getPrior() {
-        return prior;
-    }
-
-    public int getPlayerTurn() {
-        return playerTurn;
+    public float getMoveProbability() {
+        return moveProbability;
     }
 
     public int getAction() {
@@ -63,5 +56,9 @@ public class MCTEdge {
         visitedCount++;
         totalValue += value;
         meanValue = totalValue / visitedCount;
+    }
+
+    public int getPlayerTurn() {
+        return in.getState().getPlayerTurn();
     }
 }

@@ -14,10 +14,6 @@ import java.io.IOException;
 public class GameLoop {
 
     public static void main(String[] args) throws IOException {
-        State state = new State();
-
-        Model model = new Model();
-
         MancalaGame mancalaGame = new MancalaGame();
 
         DeepBeanAgent deepBeanAgent = new DeepBeanAgent();

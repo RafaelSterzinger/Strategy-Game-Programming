@@ -6,16 +6,14 @@ import java.util.*;
 
 public class MCTNode implements Iterable<MCTEdge> {
     private State state;
-
     private List<MCTEdge> edges;
-
-    private boolean expanded = false;
-
+    private boolean leaf;
     private static final double C = 1.0 / Math.sqrt(2.0);
 
     public MCTNode(State state) {
         this.state = state;
         this.edges = new ArrayList<>();
+        leaf = true;
     }
 
     public State getState() {
@@ -30,8 +28,8 @@ public class MCTNode implements Iterable<MCTEdge> {
         return state.getWinner();
     }
 
-    public boolean isExpanded() {
-        return expanded;
+    public boolean isLeaf() {
+        return leaf;
     }
 
     @Override
@@ -43,23 +41,23 @@ public class MCTNode implements Iterable<MCTEdge> {
      * Expands this node
      */
     public void expand(Map<String, MCTNode> nodes, float[] probs) {
-        assert !expanded;
+        assert !leaf;
         boolean[] mask = state.getActionMask();
         for (int action = 0; action < probs.length; action++) {
             if (mask[action]) {
                 State newState = this.state.step(action);
-                MCTNode child = nodes.get(newState.getId());
+                // TODO optimize id
+                String id = newState.getId();
+                MCTNode child = nodes.get(id);
                 if (child == null) {
                     child = new MCTNode(newState);
-                    // TODO optimize id
-                    nodes.put(child.getState().getId(), child);
+                    nodes.put(id, child);
                 }
-                // TODO find out if player turn is right
-                MCTEdge edge = new MCTEdge(this, child, state.getPlayerTurn(), action);
+                MCTEdge edge = new MCTEdge(this, child, probs[action], action);
                 edges.add(edge);
             }
         }
-        expanded = true;
+        leaf = false;
     }
 
     public int getEdgesVisitCountSum() {

@@ -27,18 +27,13 @@ public class State {
     private static final int[] MAP_OPPOSITE_BLACK = new int[]{-1, -1, -1, -1, -1, -1, -1, 5, 4, 3, 2, 1, 0, -1};
 
     public State() {
-        this(true);
+        reset(true);
     }
 
     public State(int[] board, int playerTurn) {
         assert board.length == 14;
         this.board = board;
         this.playerTurn = playerTurn;
-    }
-
-    public State(boolean randomStart) {
-        board = new int[14];
-        reset(true);
     }
 
     public State(State state) {
@@ -137,7 +132,6 @@ public class State {
         for (int i = start; i < stop; i++) {
             sum += board[i];
         }
-        System.out.println(sum );
         if (sum == 0) {
             determineWinner(oppKalaha);
         }
