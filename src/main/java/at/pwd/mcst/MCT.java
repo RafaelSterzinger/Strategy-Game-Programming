@@ -39,7 +39,7 @@ public class MCT {
         while (!node.isLeaf() && !node.isTerminal()) {
             int edgesVisitCountSum = node.getEdgesVisitCountSum();
             Iterator<MCTEdge> it = node.iterator();
-
+// TODO Check calculation
             MCTEdge bestEdge = it.next();
             double maxUpperConfidenceBound = bestEdge.getMeanValue() + bestEdge.getExplorationRate(edgesVisitCountSum);
 

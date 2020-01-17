@@ -41,11 +41,11 @@ public class MCTNode implements Iterable<MCTEdge> {
      * Expands this node
      */
     public void expand(Map<String, MCTNode> nodes, float[] probs) {
-        assert !leaf;
+        assert leaf;
         boolean[] mask = state.getActionMask();
         for (int action = 0; action < probs.length; action++) {
             if (mask[action]) {
-                State newState = this.state.step(action);
+                State newState = this.state.step(state.getPlayerTurn() == State.WHITE_ID ? action : action + 7);
                 // TODO optimize id
                 String id = newState.getId();
                 MCTNode child = nodes.get(id);
