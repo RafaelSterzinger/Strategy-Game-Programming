@@ -51,12 +51,15 @@ public class MCTNode implements Iterable<MCTEdge> {
                 MCTNode child = nodes.get(newState.getId());
                 if (child == null) {
                     child = new MCTNode(newState);
+                    // TODO optimize id
+                    nodes.put(child.getState().getId(), child);
                 }
                 // TODO find out if player turn is right
-                MCTEdge edge = new MCTEdge(this, child, newState.getPlayerTurn(), action);
+                MCTEdge edge = new MCTEdge(this, child, state.getPlayerTurn(), action);
                 edges.add(edge);
             }
         }
+        expanded = true;
     }
 
     public int getEdgesVisitCountSum() {

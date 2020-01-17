@@ -16,10 +16,10 @@ public class State {
 
     private int winner = UNDEFINED_ID;
 
-    public static final int UNDEFINED_ID = -1;
-    public static final int NOBODY_ID = 0;
+    public static final int UNDEFINED_ID = -2;
+    public static final int NOBODY_ID = -1;
+    public static final int WHITE_ID = 0;
     public static final int BLACK_ID = 1;
-    public static final int WHITE_ID = 2;
 
     private static final int WHITE_KALAHA = 6;
     private static final int BLACK_KALAHA = 13;
@@ -27,12 +27,13 @@ public class State {
     private static final int[] MAP_OPPOSITE_BLACK = new int[]{-1, -1, -1, -1, -1, -1, -1, 5, 4, 3, 2, 1, 0, -1};
 
     public State() {
-        board = new int[14];
+        this(true);
     }
 
-    public State(int[] board) {
+    public State(int[] board, int playerTurn) {
         assert board.length == 14;
         this.board = board;
+        this.playerTurn = playerTurn;
     }
 
     public State(boolean randomStart) {
@@ -83,6 +84,7 @@ public class State {
         int oppKalaha;
         int opponentId;
         int[] mapOpposite;
+        // To check side
         int start;
         int stop;
         if (playerTurn == State.WHITE_ID) {
@@ -91,7 +93,7 @@ public class State {
             opponentId = BLACK_ID;
             mapOpposite = MAP_OPPOSITE_WHITE;
             start = 0;
-            stop = oppKalaha;
+            stop = ownKalaha;
         } else {
             ownKalaha = BLACK_KALAHA;
             oppKalaha = WHITE_KALAHA;
@@ -135,6 +137,7 @@ public class State {
         for (int i = start; i < stop; i++) {
             sum += board[i];
         }
+        System.out.println(sum );
         if (sum == 0) {
             determineWinner(oppKalaha);
         }
@@ -232,11 +235,7 @@ public class State {
     }
 
     public boolean isDone() {
-        return winner != -1;
-    }
-
-    public boolean isNotDone() {
-        return winner == -1;
+        return winner != UNDEFINED_ID;
     }
 
     public int getWinner() {

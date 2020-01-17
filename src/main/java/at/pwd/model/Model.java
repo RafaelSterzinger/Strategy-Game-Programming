@@ -27,7 +27,7 @@ public class Model {
         }
     }
 
-    public void fit(State state) {
+    public void predict(State state) {
         List<Tensor<?>> results = model.session().runner()
                 .feed("serving_default_input_1:0", new State().getStateForModel())
                 .fetch("StatefulPartitionedCall", 0)

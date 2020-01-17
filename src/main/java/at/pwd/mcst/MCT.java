@@ -3,7 +3,6 @@ package at.pwd.mcst;
 import at.pwd.game.State;
 import at.pwd.model.Model;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,13 +49,15 @@ public class MCT {
     }
 
     private MCTNode getBestLeaf(MCTNode node, List<MCTEdge> path) {
-        while (node.isExpanded()) {
+        while (node.isExpanded() && !node.isTerminal()) {
             int edgesVisitCountSum = node.getEdgesVisitCountSum();
-            double maxUpperConfidenceBound = -1234;
-            MCTEdge bestEdge = null;
-            for (MCTEdge edge : node) {
+            Iterator<MCTEdge> it = node.iterator();
+            MCTEdge bestEdge = it.next();
+            double maxUpperConfidenceBound = bestEdge.getMeanValue() + bestEdge.getExplorationRate(edgesVisitCountSum);
+            while (it.hasNext()) {
                 // TODO: add dirichlet noise if root node
                 // Variant of the Upper Confidence bounds applied to Trees (PUCT) algorithm:
+                MCTEdge edge=it.next();
                 double upperConfidenceBound = edge.getMeanValue() + edge.getExplorationRate(edgesVisitCountSum);
                 if (upperConfidenceBound > maxUpperConfidenceBound) {
                     maxUpperConfidenceBound = upperConfidenceBound;
@@ -73,18 +74,19 @@ public class MCT {
         // TODO check if new edge should be added to path
         float value;
         if (!leaf.isTerminal()) {
-            model.fit(leaf.getState());
+            model.predict(leaf.getState());
             leaf.expand(nodes, model.getQuality());
             value = model.getValue();
         } else {
+            // TODO check if that is nice
             int winner = leaf.getResult();
             assert winner != State.UNDEFINED_ID;
             if (winner == State.NOBODY_ID) {
-                value = 0.5f;
+                value = 0.0f;
             } else if (winner == root.getState().getPlayerTurn()) {
                 value = 1.0f;
             } else {
-                value = 0.0f;
+                value = -1.0f;
             }
         }
         return value;
