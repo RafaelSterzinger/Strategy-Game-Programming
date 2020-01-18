@@ -91,8 +91,8 @@ public class MCT {
         float best = -9999;
         int action = 0;
         for (MCTEdge edge : root) {
-            if (best < edge.getQ()) {
-                best = edge.getQ();
+            if (best < edge.getN()) {
+                best = edge.getN();
                 action = edge.getAction();
             }
         }
