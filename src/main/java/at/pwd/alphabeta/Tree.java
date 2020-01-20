@@ -19,7 +19,6 @@ public class Tree {
         int action = -1;
         for (Node child:root.getChildren()) {
             float value = child.getValue();
-            if(value<-Float.MAX_VALUE)
             if(best < value || action == -1) {
                 best = value;
                 action = child.getAction();
@@ -57,5 +56,9 @@ public class Tree {
             children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()));
             return beta;
         }
+    }
+
+    public void changeRoot(State state) {
+        root = root.getNode(state);
     }
 }

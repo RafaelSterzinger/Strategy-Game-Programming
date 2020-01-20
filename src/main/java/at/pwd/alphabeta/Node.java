@@ -48,10 +48,10 @@ public class Node {
                 System.out.println("successful changed");
                 return current;
             } else if (currentState.getPlayerTurn() == playerId && !currentState.isDone()) {
-                children.forEach(stack::push);
+                current.getChildren().forEach(stack::push);
             }
         }
-        return null;
+        return new Node(null, state, -1);
     }
 
     public Node getParent() {

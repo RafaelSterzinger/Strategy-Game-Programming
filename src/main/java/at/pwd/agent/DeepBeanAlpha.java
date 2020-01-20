@@ -10,6 +10,7 @@ public class DeepBeanAlpha implements MancalaAgent {
     private static String[] idMapWhite;
     private static String[] idMapBlack;
     private String[] idMap;
+    private Tree tree;
 
     static {
         idMapWhite = new String[]{"14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"};
@@ -22,7 +23,13 @@ public class DeepBeanAlpha implements MancalaAgent {
         long timeInMillis = computationTime * 950L;
 
         idMap = mancalaGame.getState().getCurrentPlayer() == 0 ? idMapWhite : idMapBlack;
-        Tree tree = new Tree(mapToState(mancalaGame));
+
+        State state = mapToState(mancalaGame);
+        if(tree == null) {
+            tree = new Tree(state);
+        } else {
+            tree.changeRoot(state);
+        }
         long tik = System.currentTimeMillis();
         tree.searchMove(5);
         int action = tree.searchMove(13);
