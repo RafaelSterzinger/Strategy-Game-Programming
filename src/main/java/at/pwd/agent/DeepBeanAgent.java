@@ -25,6 +25,7 @@ public class DeepBeanAgent implements MancalaAgent {
         long timeInMillis = computationTime * 950L;
         State state = mapToState(mancalaGame);
         int action = act(state, start, timeInMillis);
+        System.out.println("DeepBeanAgent returning action " + action);
         return new MancalaAgentAction(idMap[action]);
     }
 
@@ -38,9 +39,12 @@ public class DeepBeanAgent implements MancalaAgent {
 
     public int act(State state, long start, long timeInMillis) {
         tree.changeRootTo(state);
+        int simulate = 0;
         while (System.currentTimeMillis() - start < timeInMillis) {
             tree.simulate();
+            simulate++;
         }
+        System.out.println("simulated "+simulate);
         return tree.finishMove();
     }
 

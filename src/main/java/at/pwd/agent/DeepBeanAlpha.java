@@ -22,8 +22,12 @@ public class DeepBeanAlpha implements MancalaAgent {
         long timeInMillis = computationTime * 950L;
 
         idMap = mancalaGame.getState().getCurrentPlayer() == 0 ? idMapWhite : idMapBlack;
-        Tree tree = new Tree(mapToState(mancalaGame), start, timeInMillis);
-        int action = tree.searchMove(10);
+        Tree tree = new Tree(mapToState(mancalaGame));
+        long tik = System.currentTimeMillis();
+        tree.searchMove(5);
+        int action = tree.searchMove(13);
+        long tok = System.currentTimeMillis();
+        System.out.println("Algorithm took " + (tok - tik) + " milliseconds");
         return new MancalaAgentAction(idMap[action]);
     }
 

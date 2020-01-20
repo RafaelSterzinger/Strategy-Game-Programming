@@ -7,47 +7,55 @@ import at.pwd.model.Model;
 import java.util.*;
 
 public class Tree {
-    private State root;
-    private long start;
-    private long time;
-    private int DEPTH;
-    private Integer currentBest;
+    private Node root;
 
-    public Tree(State state, long start, long time) {
-        root = state;
-        this.start = start;
-        this.time = time;
+    public Tree(State state) {
+        root = new Node(null, state, -1);
     }
 
     public int searchMove(int depth) {
-        currentBest = null;
-        Thread thread = new Thread(()->alphaBeta(root, DEPTH = depth, -Float.MAX_VALUE, Float.MAX_VALUE, true));
-        return currentBest;
+        alphaBeta(root, depth, -Float.MAX_VALUE, Float.MAX_VALUE);
+        float best = -Float.MAX_VALUE;
+        int action = -1;
+        for (Node child:root.getChildren()) {
+            float value = child.getValue();
+            if(value<-Float.MAX_VALUE)
+            if(best < value || action == -1) {
+                best = value;
+                action = child.getAction();
+            }
+        }
+        return action;
     }
 
-    private float alphaBeta(State state, int depth, float alpha, float beta, boolean maximizingPlayer) {
+    private float alphaBeta(Node currentNode, int depth, float alpha, float beta) {
+        State state = currentNode.getState();
         if (depth == 0 || state.isDone()) {
-            return state.getValue();
+            float value = state.getValue();
+            currentNode.setValue(value);
+            return value;
         }
-
-        List<Integer> actions = state.getActionList();
-        for (Integer action : actions) {
-            State nextState = state.step(action);
-            boolean moveAgain = state.getPlayerTurn() == nextState.getPlayerTurn();
-            if (maximizingPlayer) {
-                float oldAlpha = alpha;
-                alpha = Math.max(alpha, alphaBeta(nextState, depth - 1, alpha, beta, moveAgain));
-                if (depth == DEPTH && (oldAlpha < alpha || currentBest == null)) {
-                    currentBest = action;
+        List<Node> children = currentNode.expand();
+        if(root.getState().getPlayerTurn() == state.getPlayerTurn()) {
+            for (Node child : children) {
+                alpha = Math.max(alpha, alphaBeta(child, depth - 1, alpha, beta));
+                currentNode.setValue(alpha);
+                if(beta <= alpha) {
+                    break;
                 }
-            } else {
-                beta = Math.min(beta, alphaBeta(nextState, depth - 1, alpha, beta, !moveAgain));
             }
-
-            if (beta <= alpha) {
-                break;
+            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()) * -1);
+            return alpha;
+        } else {
+            for (Node child : children) {
+                beta = Math.min(beta, alphaBeta(child, depth - 1, alpha, beta));
+                currentNode.setValue(beta);
+                if(beta <= alpha) {
+                    break;
+                }
             }
+            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()));
+            return beta;
         }
-        return maximizingPlayer ? alpha : beta;
     }
 }
