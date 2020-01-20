@@ -13,13 +13,16 @@ public class DeepBeanAlpha implements MancalaAgent {
 
     static {
         idMapWhite = new String[]{"14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"};
-        idMapBlack = new String[]{"7", "6", "5", "4", "3", "2", "1", "0", "14", "13", "12", "11", "10", "9", "8"};
+        idMapBlack = new String[]{"7", "6", "5", "4", "3", "2", "1", "14", "13", "12", "11", "10", "9", "8"};
     }
 
     @Override
-    public MancalaAgentAction doTurn(int i, MancalaGame mancalaGame) {
+    public MancalaAgentAction doTurn(int computationTime, MancalaGame mancalaGame) {
+        long start = System.currentTimeMillis();
+        long timeInMillis = computationTime * 950L;
+
         idMap = mancalaGame.getState().getCurrentPlayer() == 0 ? idMapWhite : idMapBlack;
-        Tree tree = new Tree(mapToState(mancalaGame));
+        Tree tree = new Tree(mapToState(mancalaGame), start, timeInMillis);
         int action = tree.searchMove(10);
         return new MancalaAgentAction(idMap[action]);
     }

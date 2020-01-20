@@ -1,5 +1,6 @@
 package at.pwd.alphabeta;
 
+import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.game.State;
 import at.pwd.model.Model;
 
@@ -7,46 +8,46 @@ import java.util.*;
 
 public class Tree {
     private State root;
+    private long start;
+    private long time;
+    private int DEPTH;
+    private Integer currentBest;
 
-    public Tree(State state) {
+    public Tree(State state, long start, long time) {
         root = state;
+        this.start = start;
+        this.time = time;
     }
 
     public int searchMove(int depth) {
-        return alphaBeta(root, depth, -Float.MAX_VALUE, Float.MAX_VALUE, true).getMove();
+        currentBest = null;
+        Thread thread = new Thread(()->alphaBeta(root, DEPTH = depth, -Float.MAX_VALUE, Float.MAX_VALUE, true));
+        return currentBest;
     }
 
-    private Node alphaBeta(State state, int depth, float alpha, float beta, boolean maximizingPlayer) {
-        Node node = null;
+    private float alphaBeta(State state, int depth, float alpha, float beta, boolean maximizingPlayer) {
         if (depth == 0 || state.isDone()) {
-            node = new Node();
-            node.setValue(state.getValue());
-            return node;
+            return state.getValue();
         }
 
         List<Integer> actions = state.getActionList();
-        if (maximizingPlayer) {
-            for (Integer action : actions) {
-                State nextState = state.step(action);
-                node = alphaBeta(nextState, depth - 1, alpha, beta, state.getPlayerTurn() == nextState.getPlayerTurn());
-                node.setMove(action);
-                alpha = Math.max(alpha, node.getValue());
-                if (alpha > beta) {
-                    break;
+        for (Integer action : actions) {
+            State nextState = state.step(action);
+            boolean moveAgain = state.getPlayerTurn() == nextState.getPlayerTurn();
+            if (maximizingPlayer) {
+                float oldAlpha = alpha;
+                alpha = Math.max(alpha, alphaBeta(nextState, depth - 1, alpha, beta, moveAgain));
+                if (depth == DEPTH && (oldAlpha < alpha || currentBest == null)) {
+                    currentBest = action;
                 }
+            } else {
+                beta = Math.min(beta, alphaBeta(nextState, depth - 1, alpha, beta, !moveAgain));
             }
-            return node;
-        } else {
-            for (Integer action : actions) {
-                State nextState = state.step(action);
-                node = alphaBeta(nextState, depth - 1, alpha, beta, !(state.getPlayerTurn() == nextState.getPlayerTurn()));
-                node.setMove(action);
-                beta = Math.min(beta, node.getValue());
-                if (alpha > beta) {
-                    break;
-                }
+
+            if (beta <= alpha) {
+                break;
             }
-            return node;
         }
+        return maximizingPlayer ? alpha : beta;
     }
 }

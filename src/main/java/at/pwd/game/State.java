@@ -19,8 +19,9 @@ public class State {
     public static final int WHITE_ID = 0;
     public static final int BLACK_ID = 1;
 
-    private static final int WHITE_KALAHA = 6;
-    private static final int BLACK_KALAHA = 13;
+    public static final int WHITE_KALAHA = 6;
+    public static final int BLACK_KALAHA = 13;
+
     private static final int[] MAP_OPPOSITE_WHITE = new int[]{12, 11, 10, 9, 8, 7, -1, -1, -1, -1, -1, -1, -1, -1};
     private static final int[] MAP_OPPOSITE_BLACK = new int[]{-1, -1, -1, -1, -1, -1, -1, 5, 4, 3, 2, 1, 0, -1};
 
@@ -297,25 +298,25 @@ public class State {
     }
 
     public float getValue() {
-          return board[WHITE_KALAHA]-board[BLACK_KALAHA];
-//        float score = 0;
-//
-//        int ownStones = getStones(0);
-//        int oppStones = getStones(WHITE_KALAHA + 1);
-//
-//        score = ((board[WHITE_KALAHA] - board[BLACK_KALAHA]) * 1.5f + (ownStones - oppStones));
-//
-//        if (board[WHITE_KALAHA] > 35) {
-//            score += 1000;
-//        } else if (board[BLACK_KALAHA] > 35) {
-//            score -= 1000;
-//        }
-//        return score;
+        if (board[WHITE_KALAHA] > 35) {
+            return Float.MAX_VALUE;
+        } else if (board[BLACK_KALAHA] > 35) {
+            return -Float.MAX_VALUE;
+        }
+
+        float score;
+
+        int ownStones = getStones(0);
+        int oppStones = getStones(WHITE_KALAHA + 1);
+
+        score = ((board[WHITE_KALAHA] - board[BLACK_KALAHA]) * 1.5f + (ownStones - oppStones));
+
+        return score;
     }
 
-    private int getStones(int field) {
+    private int getStones(int fromBowl) {
         int sum = 0;
-        for (int i = field; i < field + 6; i++) {
+        for (int i = fromBowl; i < fromBowl + 6; i++) {
             sum += board[i];
         }
         return sum;

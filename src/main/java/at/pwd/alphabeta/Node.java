@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Node {
     private float value;
-    private int move;
+    private Integer move;
 
     public float getValue() {
         return value;
@@ -16,11 +16,11 @@ public class Node {
         this.value = value;
     }
 
-    public int getMove() {
+    public Integer getMove() {
         return move;
     }
 
-    public void setMove(int move) {
+    public void setMove(Integer move) {
         this.move = move;
     }
 }
