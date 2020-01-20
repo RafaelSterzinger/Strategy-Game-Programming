@@ -137,7 +137,8 @@ public class State {
         for (int i = 0; i < WHITE_KALAHA; i++) {
             board[kalaha] += board[i];
             board[i] = 0;
-        }for (int i = WHITE_KALAHA + 1; i < BLACK_KALAHA; i++) {
+        }
+        for (int i = WHITE_KALAHA + 1; i < BLACK_KALAHA; i++) {
             board[kalaha] += board[i];
             board[i] = 0;
         }
@@ -295,8 +296,28 @@ public class State {
         return Arrays.hashCode(board);
     }
 
+    public float getValue() {
+          return board[WHITE_KALAHA]-board[BLACK_KALAHA];
+//        float score = 0;
+//
+//        int ownStones = getStones(0);
+//        int oppStones = getStones(WHITE_KALAHA + 1);
+//
+//        score = ((board[WHITE_KALAHA] - board[BLACK_KALAHA]) * 1.5f + (ownStones - oppStones));
+//
+//        if (board[WHITE_KALAHA] > 35) {
+//            score += 1000;
+//        } else if (board[BLACK_KALAHA] > 35) {
+//            score -= 1000;
+//        }
+//        return score;
+    }
 
-    public int getValue() {
-        return board[WHITE_KALAHA]-board[BLACK_KALAHA];
+    private int getStones(int field) {
+        int sum = 0;
+        for (int i = field; i < field + 6; i++) {
+            sum += board[i];
+        }
+        return sum;
     }
 }
