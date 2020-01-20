@@ -1,7 +1,5 @@
 package at.pwd.game;
 
-
-import at.pwd.boardgame.game.mancala.MancalaGame;
 import org.tensorflow.Tensor;
 
 
@@ -298,4 +296,7 @@ public class State {
     }
 
 
+    public int getValue() {
+        return board[WHITE_KALAHA]-board[BLACK_KALAHA];
+    }
 }
