@@ -21,7 +21,7 @@ public class Tree {
 
     public int searchMove(int depth) {
         currentBest = null;
-        Thread thread = new Thread(()->alphaBeta(root, DEPTH = depth, -Float.MAX_VALUE, Float.MAX_VALUE, true));
+        alphaBeta(root, DEPTH = depth, -Float.MAX_VALUE, Float.MAX_VALUE, true);
         return currentBest;
     }
 
