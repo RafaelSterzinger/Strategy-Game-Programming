@@ -19,7 +19,7 @@ public class DeepBeanAlpha implements MancalaAgent {
 
     @Override
     public MancalaAgentAction doTurn(int computationTime, MancalaGame mancalaGame) {
-        long start = System.currentTimeMillis();
+        long tik = System.currentTimeMillis();
         long timeInMillis = computationTime * 950L;
 
         idMap = mancalaGame.getState().getCurrentPlayer() == 0 ? idMapWhite : idMapBlack;
@@ -30,9 +30,16 @@ public class DeepBeanAlpha implements MancalaAgent {
         } else {
             tree.changeRoot(state);
         }
-        long tik = System.currentTimeMillis();
-        tree.searchMove(5);
-        int action = tree.searchMove(13);
+        tree.search(5, tik, timeInMillis);
+        int depth = 14;
+        tree.search(depth, tik, timeInMillis);
+        long currentTime = System.currentTimeMillis() - tik;
+        while (currentTime < timeInMillis) {
+            System.out.printf("Depth %d time %d of %d\n",depth, currentTime, timeInMillis);
+            tree.search(++depth, tik, timeInMillis);
+            currentTime = System.currentTimeMillis() - tik;
+        }
+        int action = tree.getActionAndChangeRoot();
         long tok = System.currentTimeMillis();
         System.out.println("Algorithm took " + (tok - tik) + " milliseconds");
         return new MancalaAgentAction(idMap[action]);

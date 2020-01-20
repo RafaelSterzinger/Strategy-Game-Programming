@@ -1,45 +1,51 @@
 package at.pwd.alphabeta;
 
-import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.game.State;
-import at.pwd.model.Model;
 
-import java.util.*;
+import java.util.List;
 
 public class Tree {
     private Node root;
+    private long start, time;
 
     public Tree(State state) {
         root = new Node(null, state, -1);
     }
 
-    public int searchMove(int depth) {
+    public void search(int depth, long start, long time) {
+        this.start = start;
+        this.time = time;
         alphaBeta(root, depth, -Float.MAX_VALUE, Float.MAX_VALUE);
+    }
+
+    public int getActionAndChangeRoot() {
         float best = -Float.MAX_VALUE;
-        int action = -1;
-        for (Node child:root.getChildren()) {
+        Node newRoot = null;
+        for (Node child : root.getChildren()) {
             float value = child.getValue();
-            if(best < value || action == -1) {
+            if (best < value || newRoot == null) {
                 best = value;
-                action = child.getAction();
+                newRoot = child;
             }
         }
-        return action;
+        assert newRoot != null;
+        root = newRoot;
+        return root.getAction();
     }
 
     private float alphaBeta(Node currentNode, int depth, float alpha, float beta) {
         State state = currentNode.getState();
-        if (depth == 0 || state.isDone()) {
+        if (depth == 0 || state.isDone() || System.currentTimeMillis() - start > time) {
             float value = state.getValue();
             currentNode.setValue(value);
             return value;
         }
         List<Node> children = currentNode.expand();
-        if(root.getState().getPlayerTurn() == state.getPlayerTurn()) {
+        if (root.getState().getPlayerTurn() == state.getPlayerTurn()) {
             for (Node child : children) {
                 alpha = Math.max(alpha, alphaBeta(child, depth - 1, alpha, beta));
                 currentNode.setValue(alpha);
-                if(beta <= alpha) {
+                if (beta <= alpha) {
                     break;
                 }
             }
@@ -49,7 +55,7 @@ public class Tree {
             for (Node child : children) {
                 beta = Math.min(beta, alphaBeta(child, depth - 1, alpha, beta));
                 currentNode.setValue(beta);
-                if(beta <= alpha) {
+                if (beta <= alpha) {
                     break;
                 }
             }

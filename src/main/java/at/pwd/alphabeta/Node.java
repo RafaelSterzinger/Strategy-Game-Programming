@@ -45,12 +45,12 @@ public class Node {
             Node current = stack.pop();
             State currentState = current.getState();
             if (state.equals(currentState)) {
-                System.out.println("successful changed");
                 return current;
-            } else if (currentState.getPlayerTurn() == playerId && !currentState.isDone()) {
+            } else if (currentState.getPlayerTurn() == State.BLACK_ID && !currentState.isDone()) {
                 current.getChildren().forEach(stack::push);
             }
         }
+        System.out.println("State not found, creating new one");
         return new Node(null, state, -1);
     }
 
@@ -68,6 +68,11 @@ public class Node {
 
     public List<Node> getChildren() {
         return children;
+    }
+
+    @Override
+    public String toString() {
+        return state.getId();
     }
 }
 
