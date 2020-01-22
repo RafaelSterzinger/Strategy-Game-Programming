@@ -1,13 +1,7 @@
 package at.pwd.model;
-
-
 import at.pwd.game.State;
-import org.tensorflow.Graph;
-import org.tensorflow.Operation;
 import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Tensor;
-
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 

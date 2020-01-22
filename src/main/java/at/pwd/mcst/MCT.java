@@ -1,5 +1,4 @@
 package at.pwd.mcst;
-
 import at.pwd.game.State;
 import at.pwd.model.Model;
 
@@ -7,8 +6,8 @@ import java.util.*;
 
 public class MCT {
     private MCTNode root;
-    private Map<String, MCTNode> nodes;
-    private Model model;
+    private final Map<String, MCTNode> nodes;
+    private final Model model;
 
     public MCT(Model model, Map<String, MCTNode> nodes) {
         this.nodes = nodes;
@@ -44,7 +43,7 @@ public class MCT {
             double maxUpperConfidenceBound = bestEdge.getQ() + bestEdge.getU(sumVisitCount);
 
             while (it.hasNext()) {
-                // TODO: add dirichlet noise if root node
+                // TODO: Add Dirichlet noise if root node
                 // Variant of the Upper Confidence bounds applied to Trees (PUCT) algorithm:
                 MCTEdge edge = it.next();
                 double upperConfidenceBound = edge.getQ() + edge.getU(sumVisitCount);
@@ -60,14 +59,12 @@ public class MCT {
     }
 
     private float expandAndEvaluate(MCTNode leaf) {
-        // TODO check if new edge should be added to path
         float value;
         if (!leaf.isTerminal()) {
             model.predict(leaf.getState());
             leaf.expand(nodes, model.getPolicy());
             value = model.getValue();
         } else {
-            // TODO check if that is nice
             int winner = leaf.getResult();
             assert winner != State.UNDEFINED_ID;
             if (winner == State.NOBODY_ID) {

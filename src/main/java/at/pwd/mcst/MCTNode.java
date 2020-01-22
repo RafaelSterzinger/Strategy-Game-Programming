@@ -1,12 +1,10 @@
 package at.pwd.mcst;
-
 import at.pwd.game.State;
-
 import java.util.*;
 
 public class MCTNode implements Iterable<MCTEdge> {
-    private State state;
-    private List<MCTEdge> edges;
+    private final State state;
+    private final List<MCTEdge> edges;
     private boolean leaf;
 
     public MCTNode(State state) {
@@ -46,7 +44,6 @@ public class MCTNode implements Iterable<MCTEdge> {
             if (mask[i]) {
                 int action =state.getPlayerTurn() == State.WHITE_ID ? i : i + 7;
                 State newState = this.state.step(action);
-                // TODO optimize id
                 String id = newState.getId();
                 MCTNode child = nodes.get(id);
                 if (child == null) {

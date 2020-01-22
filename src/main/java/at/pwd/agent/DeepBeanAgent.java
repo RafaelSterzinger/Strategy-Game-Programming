@@ -7,9 +7,9 @@ import at.pwd.game.State;
 import at.pwd.mcst.MCT;
 
 public class DeepBeanAgent implements MancalaAgent {
-    private MCT tree;
+    private final MCT tree;
 
-    private static String[] idMap;
+    private static final String[] idMap;
 
     static {
         idMap = new String[]{"14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"};

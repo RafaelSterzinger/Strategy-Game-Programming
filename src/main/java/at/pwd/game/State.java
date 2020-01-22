@@ -1,16 +1,11 @@
 package at.pwd.game;
-
-
-import at.pwd.boardgame.game.mancala.MancalaGame;
 import org.tensorflow.Tensor;
-
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class State {
-    private int[] board;
+    private final int[] board;
 
     private int playerTurn;
 
@@ -26,10 +21,6 @@ public class State {
     private static final int[] MAP_OPPOSITE_WHITE = new int[]{12, 11, 10, 9, 8, 7, -1, -1, -1, -1, -1, -1, -1, -1};
     private static final int[] MAP_OPPOSITE_BLACK = new int[]{-1, -1, -1, -1, -1, -1, -1, 5, 4, 3, 2, 1, 0, -1};
 
-    public State() {
-        reset(true);
-    }
-
     public State(int[] board, int playerTurn) {
         assert board.length == 14;
         this.board = board;
@@ -41,7 +32,6 @@ public class State {
         playerTurn = state.playerTurn;
         winner = state.winner;
     }
-
 
     public void reset(boolean randomStart) {
         board[0] = 6;
@@ -79,6 +69,7 @@ public class State {
         int oppKalaha;
         int opponentId;
         int[] mapOpposite;
+
         // To check side
         int start;
         int stop;
@@ -191,15 +182,6 @@ public class State {
             }
         }
         return actions;
-    }
-
-    public int[] getActions() {
-        List<Integer> actions = getActionList();
-        int[] actionArray = new int[actions.size()];
-        for (int i = 0; i < actionArray.length; i++) {
-            actionArray[i] = actions.remove(0);
-        }
-        return actionArray;
     }
 
     private boolean[] getBooleanMask() {

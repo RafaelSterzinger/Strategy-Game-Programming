@@ -1,12 +1,12 @@
 package at.pwd.mcst;
 
 public class MCTEdge {
-    private MCTNode in;
-    private MCTNode out;
+    private final MCTNode in;
+    private final MCTNode out;
 
     private static final float CPUCT = 2;
 
-    private int action;
+    private final int action;
 
     public int visitCount; // number of visits
     public float totalValue; // total Value of next state
@@ -53,7 +53,7 @@ public class MCTEdge {
     }
 
     public void update(float value) {
-        // TODO ADD virtual loss
+        // TODO: Add virtual loss
         visitCount++;
         totalValue += value;
         meanValue = totalValue / visitCount;
