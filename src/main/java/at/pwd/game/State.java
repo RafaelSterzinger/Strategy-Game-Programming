@@ -304,14 +304,14 @@ public class State {
             return -Float.MAX_VALUE;
         }
 
-        float score;
+        // float score;
 
-        int ownStones = getStones(0);
-        int oppStones = getStones(WHITE_KALAHA + 1);
+        // int ownStones = getStones(0);
+        // int oppStones = getStones(WHITE_KALAHA + 1);
 
-        score = ((board[WHITE_KALAHA] - board[BLACK_KALAHA]) * 1.5f + (ownStones - oppStones));
+        // score = ((board[WHITE_KALAHA] - board[BLACK_KALAHA]) * 1.5f + (ownStones - oppStones));
 
-        return score;
+        return board[WHITE_KALAHA] - board[BLACK_KALAHA];
     }
 
     private int getStones(int fromBowl) {

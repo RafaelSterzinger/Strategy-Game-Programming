@@ -1,6 +1,7 @@
 package at.pwd.game;
 
 import at.pwd.agent.DeepBeanAgent;
+import at.pwd.boardgame.game.mancala.agent.MancalaAgent;
 import at.pwd.model.Model;
 import at.pwd.agent.lowerBound.MancalaAlphaBetaAgent;
 import at.pwd.boardgame.game.agent.AgentAction;
@@ -16,7 +17,8 @@ public class GameLoop {
     public static void main(String[] args) throws IOException {
         MancalaGame mancalaGame = new MancalaGame();
 
-        DeepBeanAgent deepBeanAgent = new DeepBeanAgent();
+        MancalaAgent[] agents = new MancalaAgent[]{new DeepBeanAgent(), new MancalaAlphaBetaAgent()};
+        MancalaAlphaBetaAgent deepBeanAgent = new MancalaAlphaBetaAgent();
         int deepBeanScore = 0;
 
         MancalaAlphaBetaAgent alphaBetaAgent = new MancalaAlphaBetaAgent();

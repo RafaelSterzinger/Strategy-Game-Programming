@@ -1,53 +1,70 @@
 package at.pwd.alphabeta;
 
-import at.pwd.boardgame.game.mancala.MancalaGame;
 import at.pwd.game.State;
-import at.pwd.model.Model;
 
-import java.util.*;
+import java.util.List;
 
 public class Tree {
-    private State root;
-    private long start;
-    private long time;
-    private int DEPTH;
-    private Integer currentBest;
+    private Node root;
+    private long start, time;
 
-    public Tree(State state, long start, long time) {
-        root = state;
+    public Tree(State state) {
+        root = new Node(null, state, -1);
+    }
+
+    public void search(int depth, long start, long time) {
         this.start = start;
         this.time = time;
+        alphaBeta(root, depth, -Float.MAX_VALUE, Float.MAX_VALUE);
     }
 
-    public int searchMove(int depth) {
-        currentBest = null;
-        alphaBeta(root, DEPTH = depth, -Float.MAX_VALUE, Float.MAX_VALUE, true);
-        return currentBest;
-    }
-
-    private float alphaBeta(State state, int depth, float alpha, float beta, boolean maximizingPlayer) {
-        if (depth == 0 || state.isDone()) {
-            return state.getValue();
+    public int getActionAndChangeRoot() {
+        float best = -Float.MAX_VALUE;
+        Node newRoot = null;
+        for (Node child : root.getChildren()) {
+            float value = child.getValue();
+            if (best < value || newRoot == null) {
+                best = value;
+                newRoot = child;
+            }
         }
+        assert newRoot != null;
+        root = newRoot;
+        return root.getAction();
+    }
 
-        List<Integer> actions = state.getActionList();
-        for (Integer action : actions) {
-            State nextState = state.step(action);
-            boolean moveAgain = state.getPlayerTurn() == nextState.getPlayerTurn();
-            if (maximizingPlayer) {
-                float oldAlpha = alpha;
-                alpha = Math.max(alpha, alphaBeta(nextState, depth - 1, alpha, beta, moveAgain));
-                if (depth == DEPTH && (oldAlpha < alpha || currentBest == null)) {
-                    currentBest = action;
+    private float alphaBeta(Node currentNode, int depth, float alpha, float beta) {
+        State state = currentNode.getState();
+        if (depth == 0 || state.isDone() || System.currentTimeMillis() - start > time) {
+            float value = state.getValue();
+            currentNode.setValue(value);
+            return value;
+        }
+        List<Node> children = currentNode.expand();
+        if (root.getState().getPlayerTurn() == state.getPlayerTurn()) {
+            for (Node child : children) {
+                alpha = Math.max(alpha, alphaBeta(child, depth - 1, alpha, beta));
+                currentNode.setValue(alpha);
+                if (beta <= alpha) {
+                    break;
                 }
-            } else {
-                beta = Math.min(beta, alphaBeta(nextState, depth - 1, alpha, beta, !moveAgain));
             }
-
-            if (beta <= alpha) {
-                break;
+            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()) * -1);
+            return alpha;
+        } else {
+            for (Node child : children) {
+                beta = Math.min(beta, alphaBeta(child, depth - 1, alpha, beta));
+                currentNode.setValue(beta);
+                if (beta <= alpha) {
+                    break;
+                }
             }
+            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()));
+            return beta;
         }
-        return maximizingPlayer ? alpha : beta;
+    }
+
+    public void changeRoot(State state) {
+        root = root.getNode(state);
     }
 }
