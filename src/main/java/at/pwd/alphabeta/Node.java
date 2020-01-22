@@ -38,19 +38,18 @@ public class Node {
     }
 
     public Node getNode(State state) {
-        int playerId = state.getPlayerTurn();
-        Stack<Node> stack = new Stack<>();
-        stack.push(this);
-        while (!stack.isEmpty()) {
-            Node current = stack.pop();
-            State currentState = current.getState();
-            if (state.equals(currentState)) {
-                return current;
-            } else if (currentState.getPlayerTurn() == State.BLACK_ID && !currentState.isDone()) {
-                current.getChildren().forEach(stack::push);
-            }
-        }
-        System.out.println("State not found, creating new one");
+        // Stack<Node> stack = new Stack<>();
+        // stack.push(this);
+        // while (!stack.isEmpty()) {
+        //     Node current = stack.pop();
+        //     State currentState = current.getState();
+        //     if (state.equals(currentState)) {
+        //         return current;
+        //     } else if (currentState.getPlayerTurn() == State.BLACK_ID && !currentState.isDone()) {
+        //         current.getChildren().forEach(stack::push);
+        //     }
+        // }
+        // System.out.println("State not found, creating new one");
         return new Node(null, state, -1);
     }
 

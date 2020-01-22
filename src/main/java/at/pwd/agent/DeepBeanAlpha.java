@@ -10,7 +10,6 @@ public class DeepBeanAlpha implements MancalaAgent {
     private static String[] idMapWhite;
     private static String[] idMapBlack;
     private String[] idMap;
-    private Tree tree;
 
     static {
         idMapWhite = new String[]{"14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"};
@@ -20,29 +19,32 @@ public class DeepBeanAlpha implements MancalaAgent {
     @Override
     public MancalaAgentAction doTurn(int computationTime, MancalaGame mancalaGame) {
         long tik = System.currentTimeMillis();
-        long timeInMillis = computationTime * 950L;
+        long timeInMillis = computationTime * 600L;
 
         idMap = mancalaGame.getState().getCurrentPlayer() == 0 ? idMapWhite : idMapBlack;
 
         State state = mapToState(mancalaGame);
-        if(tree == null) {
-            tree = new Tree(state);
-        } else {
-            tree.changeRoot(state);
-        }
-        tree.search(5, tik, timeInMillis);
-        int depth = 14;
-        tree.search(depth, tik, timeInMillis);
+        Tree tree = new Tree(state);
+        // if (tree == null) {
+        //     tree = new Tree(state);
+        // } else {
+        //     tree.changeRoot(state);
+        // }
+        int depth = 3;
         long currentTime = System.currentTimeMillis() - tik;
+        int action = -1;
+        int lastAction = action;
         while (currentTime < timeInMillis) {
-            System.out.printf("Depth %d time %d of %d\n",depth, currentTime, timeInMillis);
-            tree.search(++depth, tik, timeInMillis);
+            System.out.printf("Depth %d time %d of %d\n", depth, currentTime, timeInMillis);
+            lastAction = action;
+            action = tree.search(++depth, tik, timeInMillis);
             currentTime = System.currentTimeMillis() - tik;
         }
-        int action = tree.getActionAndChangeRoot();
+        action = lastAction;
         long tok = System.currentTimeMillis();
-        System.out.println("Algorithm took " + (tok - tik) + " milliseconds");
-        return new MancalaAgentAction(idMap[action]);
+        MancalaAgentAction mancalaAction = new MancalaAgentAction(idMap[action]);
+        System.out.println("Algorithm took " + (tok - tik) + " milliseconds, Action " + action + " was chosen");
+        return mancalaAction;
     }
 
     private State mapToState(MancalaGame mancalaGame) {
