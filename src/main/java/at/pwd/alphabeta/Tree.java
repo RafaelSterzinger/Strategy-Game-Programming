@@ -35,11 +35,13 @@ public class Tree {
 
     private float alphaBeta(Node currentNode, int depth, float alpha, float beta) {
         State state = currentNode.getState();
+
         if (depth == 0 || state.isDone() || System.currentTimeMillis() - start > time) {
             float value = state.getValue();
             currentNode.setValue(value);
             return value;
         }
+
         List<Node> children = currentNode.expand();
         if (root.getState().getPlayerTurn() == state.getPlayerTurn()) {
             for (Node child : children) {
@@ -49,7 +51,7 @@ public class Tree {
                     break;
                 }
             }
-            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()) * -1);
+            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()));
             return alpha;
         } else {
             for (Node child : children) {
