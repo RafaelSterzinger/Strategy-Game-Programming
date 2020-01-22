@@ -298,9 +298,9 @@ public class State {
     }
 
     public float getValue() {
-        if (board[WHITE_KALAHA] > 35) {
+        if (board[WHITE_KALAHA] > 36) {
             return Float.MAX_VALUE;
-        } else if (board[BLACK_KALAHA] > 35) {
+        } else if (board[BLACK_KALAHA] > 36) {
             return -Float.MAX_VALUE;
         }
 
