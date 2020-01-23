@@ -37,6 +37,8 @@ public class Tree {
         List<Node> children = currentNode.expand();
         if (root.getState().getPlayerTurn() == state.getPlayerTurn()) {
             for (Node child : children) {
+                //TODO: Expand one by one
+                //TODO: Check time
                 alpha = Math.max(alpha, alphaBeta(child, depth - 1, alpha, beta));
                 if (depth == this.depth && (oldAlpha < alpha || bestAction == -1)) {
                     oldAlpha = alpha;
