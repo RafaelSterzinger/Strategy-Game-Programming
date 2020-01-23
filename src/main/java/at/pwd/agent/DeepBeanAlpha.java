@@ -46,7 +46,7 @@ public class DeepBeanAlpha implements MancalaAgent {
             } catch (OutOfMemoryError ex) {
                 tree = null;
                 System.out.println("Out of memory");
-                break;
+                return new MancalaAgentAction(idMap[action]);
             }
             if (tree.getOldAlpha() == Float.MAX_VALUE) {
                 lastAction = action;
