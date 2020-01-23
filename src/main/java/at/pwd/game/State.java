@@ -222,28 +222,24 @@ public class State {
         return Arrays.hashCode(board);
     }
 
-    public float getValue() {
+    public int getValue() {
         if (board[WHITE_KALAHA] > 36) {
-            return Float.MAX_VALUE;
+            return Integer.MAX_VALUE;
         } else if (board[BLACK_KALAHA] > 36) {
-            return -Float.MAX_VALUE;
+            return Integer.MIN_VALUE;
         }
 
-        // float score;
+        int score;
 
-        // int ownStones = getStones(0);
-        // int oppStones = getStones(WHITE_KALAHA + 1);
+        int ownStones = getStones(5);
+        int oppStones = getStones(12);
 
-        // score = ((board[WHITE_KALAHA] - board[BLACK_KALAHA]) * 1.5f + (ownStones - oppStones));
+        score = ((board[WHITE_KALAHA] - board[BLACK_KALAHA]) * 2 + (ownStones - oppStones));
 
-        return board[WHITE_KALAHA] - board[BLACK_KALAHA];
+        return score;
     }
 
     private int getStones(int fromBowl) {
-        int sum = 0;
-        for (int i = fromBowl; i < fromBowl + 6; i++) {
-            sum += board[i];
-        }
-        return sum;
+        return board[fromBowl];
     }
 }

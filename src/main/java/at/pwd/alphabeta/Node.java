@@ -1,7 +1,6 @@
 package at.pwd.alphabeta;
 
 import at.pwd.game.State;
-
 import java.util.*;
 
 public class Node {

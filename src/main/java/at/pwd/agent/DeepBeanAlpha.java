@@ -6,11 +6,19 @@ import at.pwd.boardgame.game.mancala.agent.MancalaAgent;
 import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
 import at.pwd.game.State;
 
+import java.util.Arrays;
+
+/**
+ * DeepBeanAlpha Agent plays always from player 0 (white) perspective
+ */
 public class DeepBeanAlpha implements MancalaAgent {
     private static final String[] idMapWhite;
     private static final String[] idMapBlack;
     private String[] idMap;
 
+    /**
+     * Depending on current player id, we map the MancalaGame accordingly
+     */
     static {
         idMapWhite = new String[]{"14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"};
         idMapBlack = new String[]{"7", "6", "5", "4", "3", "2", "1", "14", "13", "12", "11", "10", "9", "8"};
@@ -19,7 +27,7 @@ public class DeepBeanAlpha implements MancalaAgent {
     @Override
     public MancalaAgentAction doTurn(int computationTime, MancalaGame mancalaGame) {
         long tik = System.currentTimeMillis();
-        long timeInMillis = computationTime * 950L;
+        long timeInMillis = computationTime * 900L;
 
         idMap = mancalaGame.getState().getCurrentPlayer() == 0 ? idMapWhite : idMapBlack;
 
@@ -33,7 +41,13 @@ public class DeepBeanAlpha implements MancalaAgent {
         while (currentTime < timeInMillis) {
             System.out.printf("Depth %d time %d of %d\n", depth, currentTime, timeInMillis);
             lastAction = action;
-            action = tree.search(++depth, tik, timeInMillis);
+            try {
+                action = tree.search(++depth, tik, timeInMillis);
+            } catch (OutOfMemoryError ex) {
+                tree = null;
+                System.out.println("Out of memory");
+                break;
+            }
             if (tree.getOldAlpha() == Float.MAX_VALUE) {
                 lastAction = action;
                 break;
@@ -53,5 +67,10 @@ public class DeepBeanAlpha implements MancalaAgent {
             board[i] = mancalaGame.getState().stonesIn(idMap[i]);
         }
         return new State(board, 0);
+    }
+
+    @Override
+    public String toString() {
+        return "DeepBeanAlpha";
     }
 }

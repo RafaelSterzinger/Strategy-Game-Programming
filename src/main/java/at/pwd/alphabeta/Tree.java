@@ -47,6 +47,8 @@ public class Tree {
                 }
             }
             currentNode.setValue(alpha);
+
+            //Sort in descending order, when iterative deepening, when can prune more
             children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()) * -1);
             return alpha;
         } else {
@@ -57,6 +59,7 @@ public class Tree {
                 }
             }
             currentNode.setValue(beta);
+            //Sort in descending order, when iterative deepening, when can prune more
             children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue() * -1));
             return beta;
         }
