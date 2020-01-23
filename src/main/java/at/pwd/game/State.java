@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class State {
-    private int[] board;
+    private final int[] board;
 
     private int playerTurn;
 
@@ -25,10 +25,6 @@ public class State {
     private static final int[] MAP_OPPOSITE_WHITE = new int[]{12, 11, 10, 9, 8, 7, -1, -1, -1, -1, -1, -1, -1, -1};
     private static final int[] MAP_OPPOSITE_BLACK = new int[]{-1, -1, -1, -1, -1, -1, -1, 5, 4, 3, 2, 1, 0, -1};
 
-    public State() {
-        reset(true);
-    }
-
     public State(int[] board, int playerTurn) {
         assert board.length == 14;
         this.board = board;
@@ -39,29 +35,6 @@ public class State {
         this.board = Arrays.copyOf(state.board, state.board.length);
         playerTurn = state.playerTurn;
         winner = state.winner;
-    }
-
-
-    public void reset(boolean randomStart) {
-        board[0] = 6;
-        board[1] = 6;
-        board[2] = 6;
-        board[3] = 6;
-        board[4] = 6;
-        board[5] = 6;
-        board[6] = 0;
-        board[7] = 6;
-        board[8] = 6;
-        board[9] = 6;
-        board[10] = 6;
-        board[11] = 6;
-        board[12] = 6;
-        board[13] = 0;
-        if (randomStart) {
-            playerTurn = Math.random() < 0.5 ? WHITE_ID : BLACK_ID;
-        } else {
-            playerTurn = State.WHITE_ID;
-        }
     }
 
     public State step(int action) {
@@ -157,24 +130,6 @@ public class State {
         return playerTurn;
     }
 
-    public boolean[] getActionMask() {
-        boolean[] mask = new boolean[6];
-        if (playerTurn == WHITE_ID) {
-            for (int i = 0; i < 6; i++) {
-                if (board[i] > 0) {
-                    mask[i] = true;
-                }
-            }
-        } else {
-            for (int i = 7; i < 13; i++) {
-                if (board[i] > 0) {
-                    mask[i - 7] = true;
-                }
-            }
-        }
-        return mask;
-    }
-
     public List<Integer> getActionList() {
         List<Integer> actions = new LinkedList<>();
         if (playerTurn == WHITE_ID) {
@@ -193,15 +148,6 @@ public class State {
         return actions;
     }
 
-    public int[] getActions() {
-        List<Integer> actions = getActionList();
-        int[] actionArray = new int[actions.size()];
-        for (int i = 0; i < actionArray.length; i++) {
-            actionArray[i] = actions.remove(0);
-        }
-        return actionArray;
-    }
-
     private boolean[] getBooleanMask() {
         boolean[] mask = new boolean[6];
         int start = 0;
@@ -216,27 +162,9 @@ public class State {
         return mask;
     }
 
-    public Tensor<?> getStateForModel() {
-        float[][][] array = new float[1][2][14];
-        for (int i = 0; i < 7; i++) {
-            array[0][0][i] = board[i];
-            array[0][1][i] = 0;
-        }
-        for (int i = 7; i < 14; i++) {
-            array[0][0][i] = 0;
-            array[0][1][i] = board[i];
-        }
-        return Tensor.create(array);
-    }
-
     public boolean isDone() {
         return winner != UNDEFINED_ID;
     }
-
-    public int getWinner() {
-        return winner;
-    }
-
 
     public String toString() {
         StringBuilder sb = new StringBuilder();

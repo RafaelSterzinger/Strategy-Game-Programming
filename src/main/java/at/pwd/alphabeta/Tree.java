@@ -5,14 +5,14 @@ import at.pwd.game.State;
 import java.util.List;
 
 public class Tree {
-    private Node root;
+    private final Node root;
     private long start, time;
     private float oldAlpha;
     private int bestAction;
     private int depth;
 
     public Tree(State state) {
-        root = new Node(null, state, -1);
+        root = new Node( state, -1);
     }
 
     public int search(int depth, long start, long time) {
@@ -25,35 +25,6 @@ public class Tree {
         alphaBeta(root, depth, -Float.MAX_VALUE, Float.MAX_VALUE);
         System.out.printf("finished search with value %f\n",value);
         return bestAction;
-    }
-
-    // public int getAction() {
-    //     float best = -Float.MAX_VALUE;
-    //     int action = -1;
-    //     for (Node child : root.getChildren()) {
-    //         float value = child.getValue();
-    //         if (best < value) {
-    //             best = value;
-    //             action = child.getAction();
-    //         }
-    //     }
-    //     System.out.printf("chose action %d with alpha %f\n", action, best);
-    //     return action;
-    // }
-
-    public int getActionAndChangeRoot() {
-        float best = -Float.MAX_VALUE;
-        Node newRoot = null;
-        for (Node child : root.getChildren()) {
-            float value = child.getValue();
-            if (best < value || newRoot == null) {
-                best = value;
-                newRoot = child;
-            }
-        }
-        assert newRoot != null;
-        root = newRoot;
-        return root.getAction();
     }
 
     private float alphaBeta(Node currentNode, int depth, float alpha, float beta) {
@@ -93,9 +64,5 @@ public class Tree {
 
     public float getOldAlpha() {
         return oldAlpha;
-    }
-
-    public void changeRoot(State state) {
-        root = root.getNode(state);
     }
 }

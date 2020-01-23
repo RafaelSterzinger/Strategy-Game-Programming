@@ -7,8 +7,8 @@ import at.pwd.boardgame.game.mancala.agent.MancalaAgentAction;
 import at.pwd.game.State;
 
 public class DeepBeanAlpha implements MancalaAgent {
-    private static String[] idMapWhite;
-    private static String[] idMapBlack;
+    private static final String[] idMapWhite;
+    private static final String[] idMapBlack;
     private String[] idMap;
 
     static {
@@ -19,17 +19,13 @@ public class DeepBeanAlpha implements MancalaAgent {
     @Override
     public MancalaAgentAction doTurn(int computationTime, MancalaGame mancalaGame) {
         long tik = System.currentTimeMillis();
-        long timeInMillis = computationTime * 600L;
+        long timeInMillis = computationTime * 950L;
 
         idMap = mancalaGame.getState().getCurrentPlayer() == 0 ? idMapWhite : idMapBlack;
 
         State state = mapToState(mancalaGame);
         Tree tree = new Tree(state);
-        // if (tree == null) {
-        //     tree = new Tree(state);
-        // } else {
-        //     tree.changeRoot(state);
-        // }
+
         int depth = 3;
         long currentTime = System.currentTimeMillis() - tik;
         int action = -1;
@@ -46,9 +42,9 @@ public class DeepBeanAlpha implements MancalaAgent {
         }
         action = lastAction;
         long tok = System.currentTimeMillis();
-        MancalaAgentAction mancalaAction = new MancalaAgentAction(idMap[action]);
         System.out.println("Algorithm took " + (tok - tik) + " milliseconds, Action " + action + " was chosen");
-        return mancalaAction;
+
+        return new MancalaAgentAction(idMap[action]);
     }
 
     private State mapToState(MancalaGame mancalaGame) {
