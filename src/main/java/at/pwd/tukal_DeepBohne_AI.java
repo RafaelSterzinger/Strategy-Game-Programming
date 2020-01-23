@@ -48,7 +48,7 @@ public class tukal_DeepBohne_AI implements MancalaAgent {
                 System.out.println("Out of memory");
                 return new MancalaAgentAction(idMap[action]);
             }
-            if (tree.getOldAlpha() == Float.MAX_VALUE) {
+            if (tree.getOldAlpha() == Integer.MAX_VALUE) {
                 lastAction = action;
                 break;
             }

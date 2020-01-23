@@ -65,7 +65,7 @@ public class Tree {
         }
     }
 
-    public float getOldAlpha() {
+    public int getOldAlpha() {
         return oldAlpha;
     }
 }
