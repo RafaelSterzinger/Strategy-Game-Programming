@@ -7,7 +7,7 @@ public class Node {
     private final State state;
     private final int action;
 
-    private float value;
+    private int value;
     private final List<Node> children;
 
     public Node(State state, int action) {
@@ -25,11 +25,11 @@ public class Node {
         return children;
     }
 
-    public void setValue(float value) {
+    public void setValue(int value) {
         this.value = value;
     }
 
-    public float getValue() {
+    public int getValue() {
         return value;
     }
 

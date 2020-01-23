@@ -7,7 +7,7 @@ import java.util.List;
 public class Tree {
     private final Node root;
     private long start, time;
-    private float oldAlpha;
+    private int oldAlpha;
     private int bestAction;
     private int depth;
 
@@ -18,19 +18,19 @@ public class Tree {
     public int search(int depth, long start, long time) {
         this.start = start;
         this.time = time;
-        this.oldAlpha = -Float.MAX_VALUE;
+        this.oldAlpha = Integer.MIN_VALUE;
         this.depth = depth;
         this.bestAction = -1;
-        float value = alphaBeta(root, depth, -Float.MAX_VALUE, Float.MAX_VALUE);
-        alphaBeta(root, depth, -Float.MAX_VALUE, Float.MAX_VALUE);
-        System.out.printf("finished search with value %f\n", value);
+        int value = alphaBeta(root, depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        alphaBeta(root, depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        System.out.printf("finished search with value %d\n", value);
         return bestAction;
     }
 
-    private float alphaBeta(Node currentNode, int depth, float alpha, float beta) {
+    private int alphaBeta(Node currentNode, int depth, int alpha, int beta) {
         State state = currentNode.getState();
         if (depth == 0 || state.isDone() || System.currentTimeMillis() - start > time) {
-            float value = state.getValue();
+            int value = state.getValue();
             currentNode.setValue(value);
             return value;
         }
@@ -49,7 +49,7 @@ public class Tree {
             currentNode.setValue(alpha);
 
             //Sort in descending order, when iterative deepening, when can prune more
-            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()) * -1);
+            children.sort((n1, n2) -> Integer.compare(n1.getValue(), n2.getValue()) * -1);
             return alpha;
         } else {
             for (Node child : children) {
@@ -60,7 +60,7 @@ public class Tree {
             }
             currentNode.setValue(beta);
             //Sort in descending order, when iterative deepening, when can prune more
-            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue() * -1));
+            children.sort((n1, n2) -> Integer.compare(n1.getValue(), n2.getValue() * -1));
             return beta;
         }
     }

@@ -1,5 +1,0 @@
-DeepBeanAlpha:
-Eine simple AlphaBetaPruning-Implementierung.
-Die Idee war es iterativ immer tiefer das derzeitige Spiel zu spielen,um die Zeit ideal ausnutzen zu können.
-Während wir die derzeitige beste Aktion returnieren, wird dabei die Knoten anhand ihrer Value sortiert, um bei einem erneuten Abstieg schenller zu sein und früher prunen zu können.
-Diverse simple Heuristiken können in der State-Klasse mit der Methode getValue() abgefragt werden.

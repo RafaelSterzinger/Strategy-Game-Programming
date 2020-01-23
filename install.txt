@@ -1,6 +1,0 @@
-Um den Agent zu laden reicht es das jar-File einzubinden und den Klassennamen auf at.pwd.tukal_DeepBohne_AI zu setzen.
-Um das volle Potiential unseres Agents auszunützen sollte die maximale Heap-Size möglichst hoch angesetzt werden.
-Das kann mit dem argument -Xmx16G erreicht werden.
-Also: java -Xmx16G -jar mancala-engine.jar at.pwd.boardgame.Main
-Sollte die Heap-Size nicht groß genug sein kann es passieren dass das Programm kurzzeitig nicht reagiert.
-Bitte das einfach ignorieren.
