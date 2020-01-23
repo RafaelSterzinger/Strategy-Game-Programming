@@ -76,7 +76,7 @@ public class Tree {
                 }
             }
             currentNode.setValue(alpha);
-            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()));
+            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue())*-1);
             return alpha;
         } else {
             for (Node child : children) {
@@ -86,9 +86,13 @@ public class Tree {
                 }
             }
             currentNode.setValue(beta);
-            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()));
+            children.sort((n1, n2) -> Float.compare(n1.getValue(), n2.getValue()*-1));
             return beta;
         }
+    }
+
+    public float getOldAlpha() {
+        return oldAlpha;
     }
 
     public void changeRoot(State state) {
