@@ -1,4 +1,4 @@
-package at.pwd.agent;
+package at.pwd;
 
 import at.pwd.alphabeta.Tree;
 import at.pwd.boardgame.game.mancala.MancalaGame;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 /**
  * DeepBeanAlpha Agent plays always from player 0 (white) perspective
  */
-public class DeepBeanAlpha implements MancalaAgent {
+public class tukal_DeepBohne_AI implements MancalaAgent {
     private static final String[] idMapWhite;
     private static final String[] idMapBlack;
     private String[] idMap;
@@ -71,6 +71,6 @@ public class DeepBeanAlpha implements MancalaAgent {
 
     @Override
     public String toString() {
-        return "DeepBeanAlpha";
+        return "tukal_DeepBohne_AI";
     }
 }
