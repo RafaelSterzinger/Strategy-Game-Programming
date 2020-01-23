@@ -14,7 +14,7 @@ public class Node {
     public Node(State state, int action) {
         this.state = state;
         this.action = action;
-        children=new ArrayList<>();
+        children = new ArrayList<>();
     }
 
     public List<Node> expand() {
@@ -33,8 +33,6 @@ public class Node {
     public float getValue() {
         return value;
     }
-
-
 
     public State getState() {
         return state;

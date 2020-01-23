@@ -1,8 +1,5 @@
 package at.pwd.game;
 
-import org.tensorflow.Tensor;
-
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

@@ -34,8 +34,8 @@ public class DeepBeanAlpha implements MancalaAgent {
             System.out.printf("Depth %d time %d of %d\n", depth, currentTime, timeInMillis);
             lastAction = action;
             action = tree.search(++depth, tik, timeInMillis);
-            if(tree.getOldAlpha() == Float.MAX_VALUE) {
-                lastAction=action;
+            if (tree.getOldAlpha() == Float.MAX_VALUE) {
+                lastAction = action;
                 break;
             }
             currentTime = System.currentTimeMillis() - tik;
