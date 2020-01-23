@@ -1,1 +1,6 @@
-run build.gradle to load the depe
+Um den agent zu laden reicht es das jar file einzubinden und den Klassen Namen auf at.pwd.agent.DeepBohne zu setzen.
+Um das volle potiential unseres Agents auszunützen sollte die maximale heap size möglichst erhöht werden.
+Das kann mit dem argument -Xmx16G erreicht werden.
+Also: java -Xmx16G -jar mancala-engine.jar at.pwd.boardgame.Main
+Sollte die Heap Größe nicht groß genug sein kann es passieren dass das Programm kurzzeitig nicht reagiert.
+Bitte das einfach ignorieren.
