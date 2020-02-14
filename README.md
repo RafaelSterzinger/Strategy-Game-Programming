@@ -1,0 +1,2 @@
+# Strategy Game Programming
+This project implements an agent for the famous board game Mancala. Two different approaches were chosen to master this game. The first approach is similar to the Alpha Zero Paper of Deep Mind, which uses a Deep Neural Network as well as a Monte Carlo Search Tree. The second approach uses an Alpha-Beta-Pruning approach with iterative deepening. Both implementations can be observed in the **releases** section.
